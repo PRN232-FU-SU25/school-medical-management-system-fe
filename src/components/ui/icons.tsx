@@ -74,7 +74,21 @@ import {
   CloudUpload,
   Dot,
   FileType,
-  Download
+  Download,
+  Activity,
+  Stethoscope,
+  Pill,
+  Syringe,
+  ClipboardList,
+  List,
+  Package,
+  Calendar,
+  Users,
+  Menu,
+  BarChart,
+  PieChart,
+  LineChart,
+  FileBarChart
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -154,6 +168,40 @@ export const Icons = {
   filter: Filter,
   calendar: CalendarDays,
   ImageUp: ImageUp,
+  // Thêm các biểu tượng y tế
+  activity: Activity,
+  stethoscope: Stethoscope,
+  pill: Pill,
+  syringe: Syringe,
+  clipboardList: ClipboardList,
+  list: List,
+  package: Package,
+  calendar: Calendar,
+  users: Users,
+  menu: Menu,
+  barChart: BarChart,
+  pieChart: PieChart,
+  lineChart: LineChart,
+  fileBarChart: FileBarChart,
+  logout: LogOut,
+  plus: Plus,
+  // ... existing code ...
+  medical: ({ ...props }: LucideProps) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <path d="M19 9h-5V4H8v5H3v8h5v5h6v-5h5z" />
+    </svg>
+  ),
   gitHub: ({ ...props }: LucideProps) => (
     <svg
       aria-hidden="true"

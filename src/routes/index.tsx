@@ -17,51 +17,67 @@ const NewPasswordPage = lazy(
 const DashboardLayout = lazy(
   () => import('@/components/layout/dashboard-layout')
 );
-const OverviewPage = lazy(
-  () => import('@/pages/workspace-page/overview/index')
-);
-const NewContractPage = lazy(
-  () => import('@/pages/workspace-page/contract/NewContract')
-);
-const AllContractPage = lazy(
-  () => import('@/pages/workspace-page/contract/AllContract')
-);
-const AlmostExpiredPage = lazy(
-  () => import('@/pages/workspace-page/contract/AlmostExpired')
-);
-const ExpiredPage = lazy(
-  () => import('@/pages/workspace-page/contract/Expired')
-);
-const ContractTypePage = lazy(
-  () => import('@/pages/workspace-page/contract/ContractType')
-);
-const ContractDetailPage = lazy(
-  () => import('@/pages/workspace-page/contract/ContractDetail')
-);
-const CustomerPage = lazy(
-  () => import('@/pages/workspace-page/customer/index')
-);
-const EmployeePage = lazy(
-  () => import('@/pages/workspace-page/employee/index')
-);
-const DepartmentPage = lazy(() => import('@/pages/workspace-page/department/'));
-const ReportPage = lazy(() => import('@/pages/workspace-page/report/index'));
-const ProfilePage = lazy(() => import('@/pages/workspace-page/profile/index'));
-const NotificationPage = lazy(
-  () => import('@/pages/workspace-page/notification/index')
+
+// Home & Landing Pages
+const HomePage = lazy(() => import('@/pages/home'));
+const BlogPage = lazy(() => import('@/pages/blog'));
+const BlogDetailPage = lazy(() => import('@/pages/blog/detail'));
+const ResourcesPage = lazy(() => import('@/pages/resources'));
+
+// Dashboard Pages
+const DashboardPage = lazy(() => import('@/pages/dashboard'));
+
+// Student Health Records
+const StudentRecordsPage = lazy(() => import('@/pages/student-records'));
+const StudentDetailPage = lazy(() => import('@/pages/student-records/detail'));
+const AddStudentRecordPage = lazy(() => import('@/pages/student-records/add'));
+
+// Medical Events
+const MedicalEventsPage = lazy(() => import('@/pages/medical-events'));
+const AddMedicalEventPage = lazy(() => import('@/pages/medical-events/add'));
+const MedicalEventDetailPage = lazy(
+  () => import('@/pages/medical-events/detail')
 );
 
+// Medication Management
+const MedicationsPage = lazy(() => import('@/pages/medications'));
+const AddMedicationPage = lazy(() => import('@/pages/medications/add'));
+const MedicationRequestsPage = lazy(
+  () => import('@/pages/medications/requests')
+);
+
+// Vaccination Management
+const VaccinationsPage = lazy(() => import('@/pages/vaccinations'));
+const VaccinationCampaignPage = lazy(
+  () => import('@/pages/vaccinations/campaign')
+);
+const VaccinationDetailPage = lazy(() => import('@/pages/vaccinations/detail'));
+
+// Health Checkups
+const HealthCheckupsPage = lazy(() => import('@/pages/health-checkups'));
+const HealthCheckupCampaignPage = lazy(
+  () => import('@/pages/health-checkups/campaign')
+);
+const HealthCheckupDetailPage = lazy(
+  () => import('@/pages/health-checkups/detail')
+);
+
+// Inventory Management
+const InventoryPage = lazy(() => import('@/pages/inventory'));
+
+// User Management
+const ProfilePage = lazy(() => import('@/pages/profile'));
+const NotificationPage = lazy(() => import('@/pages/notifications'));
+
+// Other Pages
 const PrivacyPage = lazy(() => import('@/pages/other-page/privacy/index'));
 const TermsPage = lazy(() => import('@/pages/other-page/terms/index'));
-const SuccessPage = lazy(
-  () => import('@/pages/other-page/verify/verify-success')
-);
-const FailPage = lazy(() => import('@/pages/other-page/verify/verify-fail'));
 
 // ----------------------------------------------------------------------
 
 export default function AppRouter() {
   const systemRoute = [
+    // Public Routes
     {
       path: '/',
       element: (
@@ -72,15 +88,32 @@ export default function AppRouter() {
       ),
       children: [
         {
-          path: '/verify-success',
-          element: <SuccessPage />
+          element: <HomePage />,
+          index: true
         },
         {
-          path: '/verify-fail',
-          element: <FailPage />
+          path: '/blog',
+          element: <BlogPage />
+        },
+        {
+          path: '/blog/:id',
+          element: <BlogDetailPage />
+        },
+        {
+          path: '/resources',
+          element: <ResourcesPage />
+        },
+        {
+          path: '/privacy',
+          element: <PrivacyPage />
+        },
+        {
+          path: '/terms',
+          element: <TermsPage />
         }
       ]
     },
+    // Auth Routes
     {
       path: '/',
       element: (
@@ -106,8 +139,9 @@ export default function AppRouter() {
         }
       ]
     },
+    // Protected Routes
     {
-      path: '/',
+      path: '/dashboard',
       element: (
         <LoginRoute>
           <DashboardLayout>
@@ -120,79 +154,98 @@ export default function AppRouter() {
       ),
       children: [
         {
-          element: <OverviewPage />,
+          element: <DashboardPage />,
           index: true
         },
+        // Student Health Records Routes
         {
-          path: '/contract/new',
-          element: <NewContractPage />
+          path: 'student-records',
+          element: <StudentRecordsPage />
         },
         {
-          path: '/contract/all',
-          element: <AllContractPage />
+          path: 'student-records/add',
+          element: <AddStudentRecordPage />
         },
         {
-          path: '/contract/all-almost-expired',
-          element: <AlmostExpiredPage />
+          path: 'student-records/:id',
+          element: <StudentDetailPage />
+        },
+        // Medical Events Routes
+        {
+          path: 'medical-events',
+          element: <MedicalEventsPage />
         },
         {
-          path: '/contract/all-expired',
-          element: <ExpiredPage />
+          path: 'medical-events/add',
+          element: <AddMedicalEventPage />
         },
         {
-          path: '/contract/type',
+          path: 'medical-events/:id',
+          element: <MedicalEventDetailPage />
+        },
+        // Medication Management Routes
+        {
+          path: 'medications',
+          element: <MedicationsPage />
+        },
+        {
+          path: 'medications/add',
+          element: <AddMedicationPage />
+        },
+        {
+          path: 'medications/requests',
+          element: <MedicationRequestsPage />
+        },
+        // Vaccination Management Routes
+        {
+          path: 'vaccinations',
+          element: <VaccinationsPage />
+        },
+        {
+          path: 'vaccinations/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin']}>
-              <ContractTypePage />
+            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+              <VaccinationCampaignPage />
             </RoleRoute>
           )
         },
         {
-          path: '/contract/:id',
-          element: <ContractDetailPage />
+          path: 'vaccinations/:id',
+          element: <VaccinationDetailPage />
+        },
+        // Health Checkups Routes
+        {
+          path: 'health-checkups',
+          element: <HealthCheckupsPage />
         },
         {
-          path: '/customer',
+          path: 'health-checkups/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'Manager']}>
-              <CustomerPage />
+            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+              <HealthCheckupCampaignPage />
             </RoleRoute>
           )
         },
         {
-          path: '/employee',
+          path: 'health-checkups/:id',
+          element: <HealthCheckupDetailPage />
+        },
+        // Inventory Management Routes
+        {
+          path: 'inventory',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'Manager']}>
-              <EmployeePage />
+            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+              <InventoryPage />
             </RoleRoute>
           )
         },
+        // User Management Routes
         {
-          path: '/department',
-          element: (
-            <RoleRoute allowedRoles={['Admin']}>
-              <DepartmentPage />
-            </RoleRoute>
-          )
-        },
-        {
-          path: '/report',
-          element: <ReportPage />
-        },
-        {
-          path: '/privacy',
-          element: <PrivacyPage />
-        },
-        {
-          path: '/terms',
-          element: <TermsPage />
-        },
-        {
-          path: '/profile',
+          path: 'profile',
           element: <ProfilePage />
         },
         {
-          path: '/notification',
+          path: 'notifications',
           element: <NotificationPage />
         }
       ]
