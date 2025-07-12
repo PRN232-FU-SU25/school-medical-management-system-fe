@@ -23,41 +23,48 @@ interface NavItem {
   icon: keyof typeof Icons;
   roles?: string[];
   children?: NavItem[];
+  description?: string;
 }
 
 const navItems: NavItem[] = [
   {
     title: 'Tổng quan',
     href: '/dashboard',
-    icon: 'dashboard'
+    icon: 'dashboard',
+    description: 'Thống kê và báo cáo tổng quan'
   },
   {
     title: 'Hồ sơ sức khỏe',
     href: '/dashboard/student-records',
     icon: 'users',
-    roles: ['Admin', 'MedicalStaff', 'Teacher', 'Parent']
+    roles: ['Admin', 'MedicalStaff', 'Teacher', 'Parent'],
+    description: 'Quản lý hồ sơ sức khỏe học sinh'
   },
   {
     title: 'Sự kiện y tế',
     href: '/dashboard/medical-events',
     icon: 'activity',
-    roles: ['Admin', 'MedicalStaff']
+    roles: ['Admin', 'MedicalStaff'],
+    description: 'Quản lý các sự kiện y tế trong trường'
   },
   {
     title: 'Quản lý thuốc',
     href: '/dashboard/medications',
     icon: 'pill',
     roles: ['Admin', 'MedicalStaff'],
+    description: 'Quản lý thuốc và đơn thuốc',
     children: [
       {
         title: 'Danh sách thuốc',
         href: '/dashboard/medications',
-        icon: 'list'
+        icon: 'list',
+        description: 'Xem và quản lý kho thuốc'
       },
       {
         title: 'Yêu cầu thuốc',
         href: '/dashboard/medications/requests',
-        icon: 'clipboardList'
+        icon: 'clipboardList',
+        description: 'Xử lý yêu cầu cấp phát thuốc'
       }
     ]
   },
@@ -66,17 +73,20 @@ const navItems: NavItem[] = [
     href: '/dashboard/vaccinations',
     icon: 'syringe',
     roles: ['Admin', 'MedicalStaff'],
+    description: 'Quản lý tiêm chủng và chiến dịch',
     children: [
       {
         title: 'Danh sách tiêm chủng',
         href: '/dashboard/vaccinations',
-        icon: 'list'
+        icon: 'list',
+        description: 'Xem lịch sử và kế hoạch tiêm chủng'
       },
       {
         title: 'Tạo chiến dịch',
         href: '/dashboard/vaccinations/campaign',
         icon: 'calendar',
-        roles: ['Admin', 'MedicalStaff']
+        roles: ['Admin', 'MedicalStaff'],
+        description: 'Lập kế hoạch chiến dịch tiêm chủng'
       }
     ]
   },
@@ -85,17 +95,20 @@ const navItems: NavItem[] = [
     href: '/dashboard/health-checkups',
     icon: 'stethoscope',
     roles: ['Admin', 'MedicalStaff'],
+    description: 'Quản lý kiểm tra sức khỏe định kỳ',
     children: [
       {
         title: 'Danh sách kiểm tra',
         href: '/dashboard/health-checkups',
-        icon: 'list'
+        icon: 'list',
+        description: 'Xem lịch sử kiểm tra sức khỏe'
       },
       {
         title: 'Tạo đợt kiểm tra',
         href: '/dashboard/health-checkups/campaign',
         icon: 'calendar',
-        roles: ['Admin', 'MedicalStaff']
+        roles: ['Admin', 'MedicalStaff'],
+        description: 'Lập kế hoạch kiểm tra sức khỏe'
       }
     ]
   },
@@ -103,7 +116,8 @@ const navItems: NavItem[] = [
     title: 'Kho vật tư y tế',
     href: '/dashboard/inventory',
     icon: 'package',
-    roles: ['Admin', 'MedicalStaff']
+    roles: ['Admin', 'MedicalStaff'],
+    description: 'Quản lý kho vật tư y tế'
   }
 ];
 
@@ -123,37 +137,43 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-gradient-to-br from-teal-50/30 to-blue-50/30">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b bg-background">
+      <header className="sticky top-0 z-40 border-b bg-white shadow-sm">
         <div className="container flex h-16 items-center justify-between py-4">
           <div className="flex items-center gap-2">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
-                  className="mr-2 md:hidden"
+                  className="mr-2 hover:bg-teal-50 md:hidden"
                 >
                   <Icons.menu className="h-5 w-5" />
-                  <span className="sr-only">Toggle Menu</span>
+                  <span className="sr-only">Mở menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="left" className="w-72 pr-0">
+              <SheetContent side="left" className="w-72 p-0">
                 <MobileNav items={navItems} setOpen={setOpen} />
               </SheetContent>
             </Sheet>
             <Link to="/" className="flex items-center gap-2">
-              <Icons.medical className="h-6 w-6 text-blue-600" />
-              <span className="hidden font-bold sm:inline-block">
-                Quản lý Y tế Học đường
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-600">
+                <Icons.medical className="h-5 w-5 text-white" />
+              </div>
+              <span className="hidden font-bold text-teal-900 sm:inline-block">
+                Y tế Học đường
               </span>
             </Link>
           </div>
           <div className="flex items-center gap-2">
             <Link to="/dashboard/notifications">
-              <Button variant="ghost" size="icon" className="relative">
-                <Icons.bell className="h-5 w-5" />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative hover:bg-teal-50"
+              >
+                <Icons.bell className="h-5 w-5 text-gray-600" />
                 <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-500"></span>
                 <span className="sr-only">Thông báo</span>
               </Button>
@@ -162,15 +182,15 @@ export default function DashboardLayout({
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-10 w-10 rounded-full"
+                  className="relative h-10 w-10 rounded-full hover:bg-teal-50"
                 >
-                  <Avatar className="h-10 w-10">
+                  <Avatar className="h-9 w-9 border-2 border-teal-200">
                     <AvatarImage
                       src="/images/avatar.png"
-                      alt={auth?.fullName || 'User'}
+                      alt={auth?.userInfo?.fullName || 'User'}
                     />
-                    <AvatarFallback>
-                      {auth?.fullName?.charAt(0) || 'U'}
+                    <AvatarFallback className="bg-teal-100 text-teal-900">
+                      {auth?.userInfo?.fullName?.charAt(0) || 'U'}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -179,28 +199,37 @@ export default function DashboardLayout({
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {auth?.fullName || 'User'}
+                      {auth?.userInfo?.fullName || 'User'}
                     </p>
-                    <p className="text-xs leading-none text-muted-foreground">
-                      {auth?.email || 'user@example.com'}
+                    <p className="text-xs leading-none text-gray-500">
+                      {auth?.userInfo?.email || 'user@example.com'}
                     </p>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <Link to="/dashboard/profile">
+                  <Link
+                    to="/dashboard/profile"
+                    className="flex w-full items-center"
+                  >
                     <Icons.user className="mr-2 h-4 w-4" />
                     <span>Hồ sơ cá nhân</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link to="/dashboard/notifications">
+                  <Link
+                    to="/dashboard/notifications"
+                    className="flex w-full items-center"
+                  >
                     <Icons.bell className="mr-2 h-4 w-4" />
                     <span>Thông báo</span>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={handleLogout}>
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-600 focus:text-red-600"
+                >
                   <Icons.logout className="mr-2 h-4 w-4" />
                   <span>Đăng xuất</span>
                 </DropdownMenuItem>
@@ -213,16 +242,16 @@ export default function DashboardLayout({
       {/* Main Content */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <aside className="hidden w-64 border-r bg-background md:block">
+        <aside className="hidden w-72 border-r bg-white/70 backdrop-blur-sm md:block">
           <ScrollArea className="h-[calc(100vh-4rem)]">
-            <div className="flex flex-col gap-2 p-4">
+            <div className="flex flex-col gap-1 p-4">
               <DesktopNav items={navItems} />
             </div>
           </ScrollArea>
         </aside>
 
         {/* Content */}
-        <main className="flex-1 overflow-auto bg-gray-50 pb-12">
+        <main className="flex-1 overflow-auto">
           <div className="container py-6">
             <Outlet />
           </div>
@@ -250,67 +279,119 @@ function DesktopNav({ items }: NavProps) {
           return null;
         }
 
-        const isActive =
-          location.pathname === item.href ||
-          (item.children &&
-            item.children.some((child) => location.pathname === child.href));
+        const isActive = location.pathname === item.href;
+        const hasActiveChild = item.children?.some(
+          (child) => location.pathname === child.href
+        );
 
-        const Icon = Icons[item.icon];
+        if (!item.children) {
+          return (
+            <Link
+              key={index}
+              to={item.href}
+              className={cn(
+                'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-900'
+                  : 'text-gray-700 hover:bg-teal-50 hover:text-teal-900'
+              )}
+            >
+              {item.icon && (
+                <>
+                  {(() => {
+                    const Icon = Icons[item.icon];
+                    return (
+                      <Icon
+                        className={cn(
+                          'h-5 w-5',
+                          isActive
+                            ? 'text-teal-600'
+                            : 'text-gray-500 group-hover:text-teal-600'
+                        )}
+                      />
+                    );
+                  })()}
+                </>
+              )}
+              <span>{item.title}</span>
+              {item.description && (
+                <span className="ml-auto text-xs text-gray-500">
+                  {item.description}
+                </span>
+              )}
+            </Link>
+          );
+        }
 
         return (
-          <div key={index}>
-            {item.children ? (
-              <details className="group" open={isActive}>
-                <summary
+          <div key={index} className="space-y-1">
+            <Link
+              to={item.href}
+              className={cn(
+                'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                isActive || hasActiveChild
+                  ? 'bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-900'
+                  : 'text-gray-700 hover:bg-teal-50 hover:text-teal-900'
+              )}
+            >
+              {item.icon && (
+                <>
+                  {(() => {
+                    const Icon = Icons[item.icon];
+                    return (
+                      <Icon
+                        className={cn(
+                          'h-5 w-5',
+                          isActive || hasActiveChild
+                            ? 'text-teal-600'
+                            : 'text-gray-500 group-hover:text-teal-600'
+                        )}
+                      />
+                    );
+                  })()}
+                </>
+              )}
+              <span>{item.title}</span>
+            </Link>
+            {item.children.map((child, childIndex) => {
+              if (child.roles && (!role || !child.roles.includes(role))) {
+                return null;
+              }
+
+              const isChildActive = location.pathname === child.href;
+
+              return (
+                <Link
+                  key={`${index}-${childIndex}`}
+                  to={child.href}
                   className={cn(
-                    'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                    isActive && 'bg-accent text-accent-foreground'
+                    'group ml-6 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isChildActive
+                      ? 'bg-gradient-to-r from-teal-100/70 to-cyan-100/70 text-teal-900'
+                      : 'text-gray-600 hover:bg-teal-50 hover:text-teal-900'
                   )}
                 >
-                  <div className="flex items-center gap-3">
-                    {Icon && <Icon className="h-5 w-5" />}
-                    <span>{item.title}</span>
-                  </div>
-                  <Icons.chevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
-                </summary>
-                <div className="ml-4 mt-1 space-y-1">
-                  {item.children.map((child, childIndex) => {
-                    // Kiểm tra quyền truy cập cho child item
-                    if (child.roles && (!role || !child.roles.includes(role))) {
-                      return null;
-                    }
-
-                    const isChildActive = location.pathname === child.href;
-                    const ChildIcon = Icons[child.icon];
-
-                    return (
-                      <Link
-                        key={childIndex}
-                        to={child.href}
-                        className={cn(
-                          'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                          isChildActive && 'bg-accent text-accent-foreground'
-                        )}
-                      >
-                        {ChildIcon && <ChildIcon className="h-4 w-4" />}
-                        <span>{child.title}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              </details>
-            ) : (
-              <Link
-                to={item.href}
-                className={cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                  isActive && 'bg-accent text-accent-foreground'
-                )}
-              >
-                {Icon && <Icon className="h-5 w-5" />}
-                <span>{item.title}</span>
-              </Link>
-            )}
+                  {child.icon && (
+                    <>
+                      {(() => {
+                        const Icon = Icons[child.icon];
+                        return (
+                          <Icon
+                            className={cn(
+                              'h-4 w-4',
+                              isChildActive
+                                ? 'text-teal-600'
+                                : 'text-gray-500 group-hover:text-teal-600'
+                            )}
+                          />
+                        );
+                      })()}
+                    </>
+                  )}
+                  <span>{child.title}</span>
+                </Link>
+              );
+            })}
           </div>
         );
       })}
@@ -324,92 +405,131 @@ function MobileNav({ items, setOpen }: NavProps) {
   const role = auth.role;
 
   return (
-    <ScrollArea className="h-full">
+    <ScrollArea className="h-[calc(100vh-4rem)] pb-10">
       <div className="flex flex-col gap-2 p-4">
-        <Link
-          to="/"
-          className="flex items-center gap-2 pb-4"
-          onClick={() => setOpen?.(false)}
-        >
-          <Icons.medical className="h-6 w-6 text-blue-600" />
-          <span className="font-bold">Quản lý Y tế Học đường</span>
-        </Link>
+        <div className="flex items-center gap-2 border-b pb-4">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-600">
+            <Icons.medical className="h-5 w-5 text-white" />
+          </div>
+          <span className="font-bold text-teal-900">Y tế Học đường</span>
+        </div>
         <div className="flex flex-col gap-1">
           {items.map((item, index) => {
-            // Kiểm tra quyền truy cập
             if (item.roles && (!role || !item.roles.includes(role))) {
               return null;
             }
 
-            const isActive =
-              location.pathname === item.href ||
-              (item.children &&
-                item.children.some(
-                  (child) => location.pathname === child.href
-                ));
+            const isActive = location.pathname === item.href;
+            const hasActiveChild = item.children?.some(
+              (child) => location.pathname === child.href
+            );
 
-            const Icon = Icons[item.icon];
+            if (!item.children) {
+              return (
+                <Link
+                  key={index}
+                  to={item.href}
+                  onClick={() => setOpen?.(false)}
+                  className={cn(
+                    'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-900'
+                      : 'text-gray-700 hover:bg-teal-50 hover:text-teal-900'
+                  )}
+                >
+                  {item.icon && (
+                    <>
+                      {(() => {
+                        const Icon = Icons[item.icon];
+                        return (
+                          <Icon
+                            className={cn(
+                              'h-5 w-5',
+                              isActive
+                                ? 'text-teal-600'
+                                : 'text-gray-500 group-hover:text-teal-600'
+                            )}
+                          />
+                        );
+                      })()}
+                    </>
+                  )}
+                  <span>{item.title}</span>
+                </Link>
+              );
+            }
 
             return (
-              <div key={index}>
-                {item.children ? (
-                  <details className="group" open={isActive}>
-                    <summary
+              <div key={index} className="space-y-1">
+                <Link
+                  to={item.href}
+                  onClick={() => setOpen?.(false)}
+                  className={cn(
+                    'group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                    isActive || hasActiveChild
+                      ? 'bg-gradient-to-r from-teal-100 to-cyan-100 text-teal-900'
+                      : 'text-gray-700 hover:bg-teal-50 hover:text-teal-900'
+                  )}
+                >
+                  {item.icon && (
+                    <>
+                      {(() => {
+                        const Icon = Icons[item.icon];
+                        return (
+                          <Icon
+                            className={cn(
+                              'h-5 w-5',
+                              isActive || hasActiveChild
+                                ? 'text-teal-600'
+                                : 'text-gray-500 group-hover:text-teal-600'
+                            )}
+                          />
+                        );
+                      })()}
+                    </>
+                  )}
+                  <span>{item.title}</span>
+                </Link>
+                {item.children.map((child, childIndex) => {
+                  if (child.roles && (!role || !child.roles.includes(role))) {
+                    return null;
+                  }
+
+                  const isChildActive = location.pathname === child.href;
+
+                  return (
+                    <Link
+                      key={`${index}-${childIndex}`}
+                      to={child.href}
+                      onClick={() => setOpen?.(false)}
                       className={cn(
-                        'flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                        isActive && 'bg-accent text-accent-foreground'
+                        'group ml-6 flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                        isChildActive
+                          ? 'bg-gradient-to-r from-teal-100/70 to-cyan-100/70 text-teal-900'
+                          : 'text-gray-600 hover:bg-teal-50 hover:text-teal-900'
                       )}
                     >
-                      <div className="flex items-center gap-3">
-                        {Icon && <Icon className="h-5 w-5" />}
-                        <span>{item.title}</span>
-                      </div>
-                      <Icons.chevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
-                    </summary>
-                    <div className="ml-4 mt-1 space-y-1">
-                      {item.children.map((child, childIndex) => {
-                        // Kiểm tra quyền truy cập cho child item
-                        if (
-                          child.roles &&
-                          (!role || !child.roles.includes(role))
-                        ) {
-                          return null;
-                        }
-
-                        const isChildActive = location.pathname === child.href;
-                        const ChildIcon = Icons[child.icon];
-
-                        return (
-                          <Link
-                            key={childIndex}
-                            to={child.href}
-                            className={cn(
-                              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                              isChildActive &&
-                                'bg-accent text-accent-foreground'
-                            )}
-                            onClick={() => setOpen?.(false)}
-                          >
-                            {ChildIcon && <ChildIcon className="h-4 w-4" />}
-                            <span>{child.title}</span>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </details>
-                ) : (
-                  <Link
-                    to={item.href}
-                    className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
-                      isActive && 'bg-accent text-accent-foreground'
-                    )}
-                    onClick={() => setOpen?.(false)}
-                  >
-                    {Icon && <Icon className="h-5 w-5" />}
-                    <span>{item.title}</span>
-                  </Link>
-                )}
+                      {child.icon && (
+                        <>
+                          {(() => {
+                            const Icon = Icons[child.icon];
+                            return (
+                              <Icon
+                                className={cn(
+                                  'h-4 w-4',
+                                  isChildActive
+                                    ? 'text-teal-600'
+                                    : 'text-gray-500 group-hover:text-teal-600'
+                                )}
+                              />
+                            );
+                          })()}
+                        </>
+                      )}
+                      <span>{child.title}</span>
+                    </Link>
+                  );
+                })}
               </div>
             );
           })}

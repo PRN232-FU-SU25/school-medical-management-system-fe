@@ -88,7 +88,8 @@ import {
   BarChart,
   PieChart,
   LineChart,
-  FileBarChart
+  FileBarChart,
+  ClipboardX
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
@@ -153,6 +154,7 @@ export const Icons = {
   check: Check,
   phone: Phone,
   clipboardCheck: ClipboardCheck,
+  clipboardX: ClipboardX,
   notepadText: NotepadText,
   wallet: Wallet,
   shoppingCart: ShoppingCart,

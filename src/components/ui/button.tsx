@@ -9,25 +9,27 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary text-white shadow',
-        destructive:
-          'bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90',
-        outline: 'border border-input bg-background shadow-sm text-grey-600',
-        secondary:
-          'bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground ',
-        link: 'text-primary underline-offset-4 hover:underline',
-        outlineBlue:
-          'border border-custom-blue text-custom-blue hover:bg-custom-blue hover:text-white',
-        outlineYellow: 'bg-custom-yellow text-white',
-        outlinePgnBtn:
-          'border-2 border-custom-blue text-custom-blue rounded-md',
-        viewDetails: 'bg-custom-blue text-white'
+        default: 'bg-teal-600 text-white shadow hover:bg-teal-700',
+        destructive: 'bg-red-600 text-white shadow-sm hover:bg-red-700',
+        outline:
+          'border border-gray-200 bg-white shadow-sm text-gray-700 hover:bg-gray-50 hover:border-gray-300',
+        secondary: 'bg-gray-100 text-gray-900 shadow-sm hover:bg-gray-200',
+        ghost: 'hover:bg-gray-100 hover:text-gray-900',
+        link: 'text-teal-600 underline-offset-4 hover:underline',
+        teal: 'bg-teal-600 text-white shadow hover:bg-teal-700',
+        cyan: 'bg-cyan-600 text-white shadow hover:bg-cyan-700',
+        emerald: 'bg-emerald-600 text-white shadow hover:bg-emerald-700',
+        outlineTeal: 'border border-teal-600 text-teal-600 hover:bg-teal-50',
+        outlineCyan: 'border border-cyan-600 text-cyan-600 hover:bg-cyan-50',
+        success: 'bg-emerald-600 text-white shadow hover:bg-emerald-700',
+        warning: 'bg-amber-500 text-white shadow hover:bg-amber-600',
+        info: 'bg-cyan-600 text-white shadow hover:bg-cyan-700'
       },
       size: {
         default: 'h-9 px-4 py-2',
         sm: 'h-8 rounded-md px-3 text-xs',
         lg: 'h-10 rounded-md px-8',
+        xl: 'h-12 rounded-md px-10 text-base',
         icon: 'h-9 w-9'
       }
     },

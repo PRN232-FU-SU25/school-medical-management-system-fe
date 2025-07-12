@@ -139,14 +139,14 @@ export default function AppRouter() {
     {
       path: '/dashboard',
       element: (
-        <LoginRoute>
-          <DashboardLayout>
-            <Suspense>
-              <ScrollToTop />
-              <Outlet />
-            </Suspense>
-          </DashboardLayout>
-        </LoginRoute>
+        // <LoginRoute>
+        <DashboardLayout>
+          <Suspense>
+            <ScrollToTop />
+            <Outlet />
+          </Suspense>
+        </DashboardLayout>
+        // </LoginRoute>
       ),
       children: [
         {
@@ -200,9 +200,9 @@ export default function AppRouter() {
         {
           path: 'vaccinations/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-              <VaccinationCampaignPage />
-            </RoleRoute>
+            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+            <VaccinationCampaignPage />
+            // </RoleRoute>
           )
         },
         {
@@ -217,9 +217,9 @@ export default function AppRouter() {
         {
           path: 'health-checkups/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-              <HealthCheckupCampaignPage />
-            </RoleRoute>
+            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+            <HealthCheckupCampaignPage />
+            // </RoleRoute>
           )
         },
         {
@@ -230,9 +230,9 @@ export default function AppRouter() {
         {
           path: 'inventory',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-              <InventoryPage />
-            </RoleRoute>
+            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
+            <InventoryPage />
+            // </RoleRoute>
           )
         },
         // User Management Routes

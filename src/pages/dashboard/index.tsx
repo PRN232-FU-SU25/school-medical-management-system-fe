@@ -15,7 +15,9 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
+  LineChart,
+  Line
 } from 'recharts';
 
 // Dữ liệu mẫu cho dashboard
@@ -36,7 +38,16 @@ const medicalEventTypesData = [
   { name: 'Khác', value: 15 }
 ];
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+const healthTrendsData = [
+  { name: 'Tháng 1', sốt: 65, đauBụng: 28, cảmCúm: 40 },
+  { name: 'Tháng 2', sốt: 59, đauBụng: 48, cảmCúm: 38 },
+  { name: 'Tháng 3', sốt: 80, đauBụng: 40, cảmCúm: 42 },
+  { name: 'Tháng 4', sốt: 81, đauBụng: 19, cảmCúm: 33 },
+  { name: 'Tháng 5', sốt: 56, đauBụng: 36, cảmCúm: 25 },
+  { name: 'Tháng 6', sốt: 55, đauBụng: 27, cảmCúm: 30 }
+];
+
+const COLORS = ['#0DB4B9', '#14B8A6', '#0EA5E9', '#8B5CF6', '#F59E0B'];
 
 export default function DashboardPage() {
   const auth = useSelector((state: RootState) => state.auth);
@@ -46,22 +57,30 @@ export default function DashboardPage() {
     {
       name: 'Sự kiện y tế trong tháng',
       value: 28,
-      icon: <Icons.activity className="h-5 w-5 text-blue-600" />
+      icon: <Icons.activity className="h-5 w-5 text-teal-600" />,
+      color: 'from-teal-500 to-cyan-500',
+      textColor: 'text-teal-700'
     },
     {
       name: 'Học sinh cần theo dõi',
       value: 15,
-      icon: <Icons.user className="h-5 w-5 text-yellow-600" />
+      icon: <Icons.user className="h-5 w-5 text-cyan-600" />,
+      color: 'from-cyan-500 to-blue-500',
+      textColor: 'text-cyan-700'
     },
     {
       name: 'Yêu cầu thuốc chờ xử lý',
       value: 8,
-      icon: <Icons.pill className="h-5 w-5 text-green-600" />
+      icon: <Icons.pill className="h-5 w-5 text-emerald-600" />,
+      color: 'from-emerald-500 to-teal-500',
+      textColor: 'text-emerald-700'
     },
     {
       name: 'Chiến dịch y tế sắp tới',
       value: 2,
-      icon: <Icons.calendar className="h-5 w-5 text-purple-600" />
+      icon: <Icons.calendar className="h-5 w-5 text-indigo-600" />,
+      color: 'from-indigo-500 to-purple-500',
+      textColor: 'text-indigo-700'
     }
   ];
 
@@ -125,52 +144,77 @@ export default function DashboardPage() {
     >
       <div className="dashboard h-full w-full">
         {/* Thống kê tổng quan */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
           {overviewData.map((item, index) => (
-            <Card key={index} className="border-l-4 border-l-blue-500">
+            <Card key={index} className="overflow-hidden border-none shadow-md">
+              <div
+                className={`h-1 w-full bg-gradient-to-r ${item.color}`}
+              ></div>
               <CardContent className="flex items-center justify-between p-6">
                 <div>
                   <p className="text-sm font-medium text-gray-500">
                     {item.name}
                   </p>
-                  <h3 className="mt-1 text-3xl font-semibold">{item.value}</h3>
+                  <h3
+                    className={`mt-2 text-3xl font-semibold ${item.textColor}`}
+                  >
+                    {item.value}
+                  </h3>
                 </div>
-                <div className="rounded-full bg-blue-50 p-3">{item.icon}</div>
+                <div className="rounded-full bg-gray-50 p-3 shadow-sm">
+                  {item.icon}
+                </div>
               </CardContent>
             </Card>
           ))}
         </div>
 
         {/* Biểu đồ thống kê */}
-        <div className="mb-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Sự kiện y tế theo tháng</CardTitle>
+        <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
+          <Card className="border-none shadow-md">
+            <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+              <CardTitle className="text-teal-900">
+                Sự kiện y tế theo tháng
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={medicalEventsData}
                     margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="name" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)'
+                      }}
+                    />
                     <Legend />
-                    <Bar dataKey="count" name="Số sự kiện" fill="#3b82f6" />
+                    <Bar
+                      dataKey="count"
+                      name="Số sự kiện"
+                      fill="#0DB4B9"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Phân loại sự kiện y tế</CardTitle>
+          <Card className="border-none shadow-md">
+            <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+              <CardTitle className="text-teal-900">
+                Phân loại sự kiện y tế
+              </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -193,7 +237,14 @@ export default function DashboardPage() {
                         />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '8px',
+                        border: '1px solid #e2e8f0',
+                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)'
+                      }}
+                    />
                     <Legend />
                   </PieChart>
                 </ResponsiveContainer>
@@ -202,30 +253,96 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        {/* Tab cho sự kiện gần đây và sắp tới */}
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Hoạt động y tế</CardTitle>
+        {/* Biểu đồ xu hướng sức khỏe */}
+        <Card className="mb-8 border-none shadow-md">
+          <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+            <CardTitle className="text-teal-900">
+              Xu hướng sức khỏe học sinh
+            </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={healthTrendsData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      borderRadius: '8px',
+                      border: '1px solid #e2e8f0',
+                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.08)'
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="sốt"
+                    stroke="#0DB4B9"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="đauBụng"
+                    stroke="#8B5CF6"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="cảmCúm"
+                    stroke="#F59E0B"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Tab cho sự kiện gần đây và sắp tới */}
+        <Card className="mb-6 border-none shadow-md">
+          <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+            <CardTitle className="text-teal-900">Hoạt động y tế</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
             <Tabs defaultValue="recent">
-              <TabsList className="mb-4">
-                <TabsTrigger value="recent">Sự kiện gần đây</TabsTrigger>
-                <TabsTrigger value="upcoming">Sự kiện sắp tới</TabsTrigger>
+              <TabsList className="mb-4 bg-gray-100">
+                <TabsTrigger
+                  value="recent"
+                  className="data-[state=active]:bg-teal-100 data-[state=active]:text-teal-900"
+                >
+                  Sự kiện gần đây
+                </TabsTrigger>
+                <TabsTrigger
+                  value="upcoming"
+                  className="data-[state=active]:bg-teal-100 data-[state=active]:text-teal-900"
+                >
+                  Sự kiện sắp tới
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="recent">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b">
-                        <th className="pb-2 text-left font-medium">Học sinh</th>
-                        <th className="pb-2 text-left font-medium">Lớp</th>
-                        <th className="pb-2 text-left font-medium">
+                      <tr className="border-b text-teal-900">
+                        <th className="pb-3 text-left font-medium">Học sinh</th>
+                        <th className="pb-3 text-left font-medium">Lớp</th>
+                        <th className="pb-3 text-left font-medium">
                           Loại sự kiện
                         </th>
-                        <th className="pb-2 text-left font-medium">Ngày</th>
-                        <th className="pb-2 text-left font-medium">
+                        <th className="pb-3 text-left font-medium">Ngày</th>
+                        <th className="pb-3 text-left font-medium">
                           Trạng thái
                         </th>
                       </tr>
@@ -244,8 +361,8 @@ export default function DashboardPage() {
                             <span
                               className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
                                 event.status === 'Đã xử lý'
-                                  ? 'bg-green-100 text-green-800'
-                                  : 'bg-yellow-100 text-yellow-800'
+                                  ? 'bg-teal-100 text-teal-800'
+                                  : 'bg-amber-100 text-amber-800'
                               }`}
                             >
                               {event.status}
@@ -263,18 +380,22 @@ export default function DashboardPage() {
                   {upcomingEvents.map((event) => (
                     <div
                       key={event.id}
-                      className="flex items-center justify-between rounded-lg border p-4 hover:bg-gray-50"
+                      className="flex items-center justify-between rounded-lg border border-gray-100 bg-white p-4 shadow-sm transition-all hover:border-teal-200 hover:shadow-md"
                     >
                       <div>
-                        <h4 className="font-medium">{event.title}</h4>
+                        <h4 className="font-medium text-teal-900">
+                          {event.title}
+                        </h4>
                         <div className="mt-1 flex items-center text-sm text-gray-500">
-                          <Icons.calendar className="mr-1 h-4 w-4" />
+                          <Icons.calendar className="mr-1 h-4 w-4 text-teal-500" />
                           <span>{event.date}</span>
                           <span className="mx-2">•</span>
                           <span>{event.type}</span>
                         </div>
                       </div>
-                      <Icons.chevronRight className="h-5 w-5 text-gray-400" />
+                      <div className="rounded-full bg-teal-50 p-2 text-teal-600">
+                        <Icons.chevronRight className="h-5 w-5" />
+                      </div>
                     </div>
                   ))}
                 </div>

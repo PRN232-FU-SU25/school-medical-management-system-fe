@@ -11,8 +11,8 @@ import __helpers from '../helpers';
 
 const baseURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://smartcontract111.azurewebsites.net/'
-    : 'https://localhost:7012/';
+    ? 'https://smms.azurewebsites.net/'
+    : 'https://localhost:8080/';
 
 const token = helpers.cookie_get('AT');
 // const refreshToken = helpers.cookie_get('RT');
@@ -59,7 +59,7 @@ axios.interceptors.request.use(onRequestSuccess, onRequestError);
 axios.interceptors.response.use(onResponseSuccess, onResponseError);
 axios.defaults.baseURL = baseURL;
 
-var BaseRequest = {
+const BaseRequest = {
   Get: async (url: string) => {
     try {
       const response = await axios.get(url);
@@ -141,7 +141,8 @@ var BaseRequest = {
       });
       const fileName = __helpers.getFileName(name);
 
-      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       const blob = new Blob([response], { type: 'application/pdf' });
       const urlBlob = URL.createObjectURL(blob);
 
@@ -166,7 +167,8 @@ var BaseRequest = {
         responseType: 'blob'
       });
 
-      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
       const blob = new Blob([response], { type: 'application/pdf' });
       const urlBlob = URL.createObjectURL(blob);
 

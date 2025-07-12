@@ -1,6 +1,6 @@
 import { NavItem } from '@/types';
 
-export var PagingModel = {
+export const PagingModel = {
   pageNumber: 1,
   pageSize: 10,
   keyword: '',
@@ -12,60 +12,6 @@ export var PagingModel = {
   month: 0,
   year: 0,
   createdBy: ''
-};
-
-export var ContractGetListDTO = {
-  pageIndex: 1,
-  pageSize: 10,
-  keyword: null,
-  orderDate: null,
-  customerId: null,
-  contractTypeId: null,
-  expiredDayLeft: null,
-  isExpired: false,
-  signedDate: {},
-  effectiveDate: {},
-  expirationDate: {}
-};
-
-export var ContractAppendixGetListDTO = {
-  pageIndex: 1,
-  pageSize: 10,
-  keyword: null,
-  orderDate: null,
-  signedDate: {},
-  effectiveDate: {},
-  expirationDate: {},
-  createdDate: {},
-  modifiedDate: {}
-};
-
-export var ContractDocumentGetListDTO = {
-  pageIndex: 1,
-  pageSize: 10,
-  keyword: null,
-  orderDate: null,
-  createdDate: {},
-  modifiedDate: {}
-};
-
-export var ContractServiceGetListDTO = {
-  pageIndex: 1,
-  pageSize: 10,
-  keyword: null,
-  orderDate: null,
-  createdDate: {},
-  modifiedDate: {},
-  unitPrice: {},
-  tax: {},
-  totalPrice: {}
-};
-
-export var HistoryGetListDTO = {
-  pageIndex: 1,
-  pageSize: 10,
-  keyword: null,
-  createdDate: {}
 };
 
 export const footerMenuItems: NavItem[] = [
