@@ -6,13 +6,9 @@ import RoleRoute from './private/RoleRoute';
 import LoginRoute from './private/LoginRoute';
 
 const AuthLayout = lazy(() => import('@/components/layout/auth-layout'));
-const LoginPage = lazy(() => import('@/pages/auth-page/login/index'));
-const ForgotPasswordPage = lazy(
-  () => import('@/pages/auth-page/forgot-password/index')
-);
-const NewPasswordPage = lazy(
-  () => import('@/pages/auth-page/new-password/index')
-);
+const LoginPage = lazy(() => import('@/pages/auth/login'));
+const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
+const NewPasswordPage = lazy(() => import('@/pages/auth/new-password'));
 
 const DashboardLayout = lazy(
   () => import('@/components/layout/dashboard-layout')
@@ -70,8 +66,8 @@ const ProfilePage = lazy(() => import('@/pages/profile'));
 const NotificationPage = lazy(() => import('@/pages/notifications'));
 
 // Other Pages
-const PrivacyPage = lazy(() => import('@/pages/other-page/privacy/index'));
-const TermsPage = lazy(() => import('@/pages/other-page/terms/index'));
+const PrivacyPage = lazy(() => import('@/pages/other/privacy'));
+const TermsPage = lazy(() => import('@/pages/other/terms'));
 
 // ----------------------------------------------------------------------
 
