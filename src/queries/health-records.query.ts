@@ -3,35 +3,35 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 
 export interface HealthRecordRequest {
   studentId: number;
-  allergies: string;
-  chronicDiseases: string;
-  bloodType: string;
-  height: number;
-  weight: number;
-  visionLeft: number;
-  visionRight: number;
-  note: string;
-  status: string;
+  allergies?: string;
+  chronicDiseases?: string;
+  pastTreatments?: string;
+  vision?: string;
+  hearing?: string;
+  vaccinations?: string;
 }
 
-export interface HealthRecordResponse {
-  id: number;
+export interface Student {
   studentId: number;
-  studentName: string;
-  class: string;
-  dateOfBirth: string;
+  fullName: string;
+  dob: string;
   gender: string;
+  className: string;
+  parentId: number;
+}
+
+export interface HealthRecord {
+  healthRecordId: number;
+  studentId: number;
   allergies: string;
   chronicDiseases: string;
-  bloodType: string;
-  height: number;
-  weight: number;
-  visionLeft: number;
-  visionRight: number;
-  note: string;
-  status: string;
+  pastTreatments: string;
+  vision: string;
+  hearing: string;
+  vaccinations: string;
   createdAt: string;
   updatedAt: string;
+  student: Student;
 }
 
 export const useGetHealthRecords = (
@@ -49,9 +49,20 @@ export const useGetHealthRecords = (
   });
 };
 
+export const useGetHealthRecordById = (id: number) => {
+  return useQuery({
+    queryKey: ['health_record', id],
+    queryFn: async () => {
+      const response = await BaseRequest.Get(`/api/v1/health-records/${id}`);
+      return response;
+    },
+    enabled: !!id
+  });
+};
+
 export const useGetHealthRecordByStudent = (studentId: number) => {
   return useQuery({
-    queryKey: ['health_record', studentId],
+    queryKey: ['health_record_by_student', studentId],
     queryFn: async () => {
       const response = await BaseRequest.Get(
         `/api/v1/health-records/by-student/${studentId}`

@@ -17,47 +17,58 @@ import { useGetHealthRecords } from '@/queries/health-records.query';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface HealthRecord {
-  id: number;
-  studentName: string;
-  class: string;
-  dateOfBirth: string;
-  gender: string;
+  healthRecordId: number;
+  studentId: number;
   allergies: string;
   chronicDiseases: string;
-  status: string;
+  pastTreatments: string;
+  vision: string;
+  hearing: string;
+  vaccinations: string;
+  createdAt: string;
+  updatedAt: string;
+  student: {
+    studentId: number;
+    fullName: string;
+    dob: string;
+    gender: string;
+    className: string;
+    parentId: number;
+  };
 }
 
-// Định nghĩa cột cho bảng
 const columns = [
   {
-    accessorKey: 'studentName',
+    accessorKey: 'student.fullName',
     header: 'Họ tên',
-    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
+    cell: ({ row }: { row: { original: HealthRecord } }) => (
       <div className="font-medium text-teal-900">
-        {row.getValue('studentName')}
+        {row.original.student.fullName}
       </div>
     )
   },
   {
-    accessorKey: 'class',
+    accessorKey: 'student.className',
     header: 'Lớp',
-    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
-      <div className="text-gray-600">{row.getValue('class')}</div>
+    cell: ({ row }: { row: { original: HealthRecord } }) => (
+      <div className="text-gray-600">{row.original.student.className}</div>
     )
   },
   {
-    accessorKey: 'dateOfBirth',
+    accessorKey: 'student.dob',
     header: 'Ngày sinh',
-    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
-      <div className="text-gray-600">{row.getValue('dateOfBirth')}</div>
+    cell: ({ row }: { row: { original: HealthRecord } }) => (
+      <div className="text-gray-600">
+        {row.original.student.dob.split('T')[0]}
+      </div>
     )
   },
   {
-    accessorKey: 'gender',
+    accessorKey: 'student.gender',
     header: 'Giới tính',
-    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
+    cell: ({ row }: { row: { original: HealthRecord } }) => (
       <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
-        {row.getValue('gender')}
+        {row.original.student.gender}
       </span>
     )
   },
@@ -86,16 +97,15 @@ const columns = [
     }
   },
   {
-    accessorKey: 'status',
-    header: 'Trạng thái',
+    accessorKey: 'pastTreatments',
+    header: 'Tiền sử điều trị',
     cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
-      const status = row.getValue('status');
-      const statusConfig = {
-        'Bình thường': { variant: 'success' as const },
-        'Cần theo dõi': { variant: 'warning' as const }
-      };
-      const config = statusConfig[status as keyof typeof statusConfig];
-      return <Badge variant={config.variant}>{status}</Badge>;
+      const treatments = row.getValue('pastTreatments');
+      return treatments === 'Không' ? (
+        <div className="text-gray-600">Không</div>
+      ) : (
+        <Badge variant="warning">{treatments}</Badge>
+      );
     }
   },
   {
@@ -110,7 +120,7 @@ const columns = [
             className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
             asChild
           >
-            <Link to={`/dashboard/student-records/${student.id}`}>
+            <Link to={`/dashboard/student-records/${student.healthRecordId}`}>
               <Icons.eye className="h-4 w-4" />
               <span className="sr-only">Xem chi tiết</span>
             </Link>
@@ -124,9 +134,6 @@ const columns = [
 export default function StudentRecordsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [classFilter, setClassFilter] = useState<string | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(
-    undefined
-  );
   const [searchParams] = useSearchParams();
 
   // Get page and limit from URL
@@ -142,34 +149,23 @@ export default function StudentRecordsPage() {
 
   // Lọc dữ liệu học sinh dựa trên các bộ lọc
   const filteredStudents = (
-    (healthRecordsData?.data?.items as HealthRecord[]) || []
+    (healthRecordsData?.items as HealthRecord[]) || []
   ).filter((student) => {
-    const matchesSearch = student.studentName
-      .toLowerCase()
+    const matchesSearch = student?.student?.fullName
+      ?.toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesClass =
-      !classFilter || classFilter === 'all' || student.class === classFilter;
-    const matchesStatus =
-      !statusFilter ||
-      statusFilter === 'all' ||
-      student.status === statusFilter;
-    return matchesSearch && matchesClass && matchesStatus;
+      !classFilter ||
+      classFilter === 'all' ||
+      student.student?.className === classFilter;
+    return matchesSearch && matchesClass;
   });
 
   // Danh sách lớp học duy nhất
   const uniqueClasses = Array.from(
     new Set(
-      ((healthRecordsData?.data?.items as HealthRecord[]) || []).map(
-        (student) => student.class
-      )
-    )
-  );
-
-  // Danh sách trạng thái duy nhất
-  const uniqueStatuses = Array.from(
-    new Set(
-      ((healthRecordsData?.data?.items as HealthRecord[]) || []).map(
-        (student) => student.status
+      ((healthRecordsData?.items as HealthRecord[]) || []).map(
+        (student) => student.student?.className
       )
     )
   );
@@ -184,7 +180,6 @@ export default function StudentRecordsPage() {
           <div className="space-y-4">
             <div className="flex gap-4">
               <Skeleton className="h-10 w-[250px]" />
-              <Skeleton className="h-10 w-[150px]" />
               <Skeleton className="h-10 w-[150px]" />
             </div>
             <div className="space-y-2">
@@ -232,22 +227,9 @@ export default function StudentRecordsPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tất cả lớp</SelectItem>
-                  {uniqueClasses.map((className) => (
-                    <SelectItem key={className} value={className}>
+                  {uniqueClasses.map((className, index) => (
+                    <SelectItem key={index} value={className}>
                       {className}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="sm:max-w-[200px]">
-                  <SelectValue placeholder="Lọc theo trạng thái" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  {uniqueStatuses.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {status}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -255,13 +237,13 @@ export default function StudentRecordsPage() {
             </div>
 
             {/* Bảng dữ liệu */}
-            <div className="flex flex-col gap-4 overflow-hidden bg-white">
-              <DataTable
-                columns={columns}
-                data={filteredStudents}
-                pageCount={healthRecordsData?.data?.totalPages || 1}
-              />
-            </div>
+            <DataTable
+              columns={columns}
+              data={filteredStudents}
+              pageCount={Math.ceil(
+                (healthRecordsData?.totalRecords || 0) / pageSize
+              )}
+            />
           </div>
         </CardContent>
       </Card>

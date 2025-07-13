@@ -10,11 +10,11 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/ui/icons';
 import { useUpsertHealthRecord } from '@/queries/health-records.query';
+import { useGetStudents } from '@/queries/student.query';
 import { toast } from 'sonner';
 import { Textarea } from '@/components/ui/textarea';
 import {
@@ -27,35 +27,29 @@ import {
 
 const formSchema = z.object({
   studentId: z.number().min(1, 'Vui lòng chọn học sinh'),
-  allergies: z.string().min(1, 'Vui lòng nhập thông tin dị ứng'),
-  chronicDiseases: z.string().min(1, 'Vui lòng nhập thông tin bệnh mãn tính'),
-  bloodType: z.string().min(1, 'Vui lòng chọn nhóm máu'),
-  height: z.number().min(1, 'Vui lòng nhập chiều cao'),
-  weight: z.number().min(1, 'Vui lòng nhập cân nặng'),
-  visionLeft: z
-    .number()
-    .min(0, 'Thị lực không hợp lệ')
-    .max(10, 'Thị lực không hợp lệ'),
-  visionRight: z
-    .number()
-    .min(0, 'Thị lực không hợp lệ')
-    .max(10, 'Thị lực không hợp lệ'),
-  note: z.string(),
-  status: z.string().min(1, 'Vui lòng chọn trạng thái')
+  allergies: z.string().optional(),
+  chronicDiseases: z.string().optional(),
+  pastTreatments: z.string().optional(),
+  vision: z.string().optional(),
+  hearing: z.string().optional(),
+  vaccinations: z.string().optional()
 });
 
 export default function AddHealthRecordPage() {
   const navigate = useNavigate();
   const { mutateAsync: upsertHealthRecord, isPending } =
     useUpsertHealthRecord();
+  const { data: studentsData } = useGetStudents(1, 100); // Lấy danh sách học sinh
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       allergies: 'Không',
       chronicDiseases: 'Không',
-      note: '',
-      status: 'Bình thường'
+      pastTreatments: 'Không',
+      vision: 'Bình thường',
+      hearing: 'Bình thường',
+      vaccinations: 'Đầy đủ'
     }
   });
 
@@ -93,120 +87,26 @@ export default function AddHealthRecordPage() {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Học sinh</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Nhập ID học sinh"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="bloodType"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nhóm máu</FormLabel>
                     <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      value={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Chọn nhóm máu" />
+                          <SelectValue placeholder="Chọn học sinh" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {['A', 'B', 'O', 'AB'].map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
+                        {studentsData?.items?.map((student) => (
+                          <SelectItem
+                            key={student?.studentId}
+                            value={student?.studentId.toString()}
+                          >
+                            {student?.fullName} - {student?.className}
                           </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Chiều cao (cm)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Nhập chiều cao"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="weight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Cân nặng (kg)</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        placeholder="Nhập cân nặng"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="visionLeft"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Thị lực mắt trái</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="Nhập thị lực"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="visionRight"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Thị lực mắt phải</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        step="0.1"
-                        placeholder="Nhập thị lực"
-                        {...field}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      />
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -219,7 +119,10 @@ export default function AddHealthRecordPage() {
                   <FormItem>
                     <FormLabel>Dị ứng</FormLabel>
                     <FormControl>
-                      <Input placeholder="Nhập thông tin dị ứng" {...field} />
+                      <Textarea
+                        placeholder="Nhập thông tin dị ứng"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -233,7 +136,7 @@ export default function AddHealthRecordPage() {
                   <FormItem>
                     <FormLabel>Bệnh mãn tính</FormLabel>
                     <FormControl>
-                      <Input
+                      <Textarea
                         placeholder="Nhập thông tin bệnh mãn tính"
                         {...field}
                       />
@@ -245,60 +148,87 @@ export default function AddHealthRecordPage() {
 
               <FormField
                 control={form.control}
-                name="status"
+                name="pastTreatments"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Trạng thái</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Chọn trạng thái" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Bình thường">Bình thường</SelectItem>
-                        <SelectItem value="Cần theo dõi">
-                          Cần theo dõi
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <FormLabel>Tiền sử điều trị</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Nhập tiền sử điều trị"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="vision"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thị lực</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Nhập thông tin thị lực"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="hearing"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thính lực</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Nhập thông tin thính lực"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="vaccinations"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tiêm chủng</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Nhập thông tin tiêm chủng"
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="note"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Ghi chú</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Nhập ghi chú (nếu có)"
-                      className="resize-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex justify-end">
+            <div className="flex justify-end space-x-4">
               <Button
-                type="submit"
-                className="bg-teal-600 hover:bg-teal-700"
+                type="button"
+                variant="outline"
+                onClick={() => navigate(-1)}
                 disabled={isPending}
               >
+                Hủy
+              </Button>
+              <Button type="submit" disabled={isPending}>
                 {isPending && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Lưu hồ sơ
+                Lưu
               </Button>
             </div>
           </form>

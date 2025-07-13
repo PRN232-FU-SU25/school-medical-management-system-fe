@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
-import { useGetHealthRecordByStudent } from '@/queries/health-records.query';
+import { useGetHealthRecordById } from '@/queries/health-records.query';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -27,11 +27,11 @@ const InfoRow = ({ label, value, badge, badgeVariant }: InfoRowProps) => (
 );
 
 export default function HealthRecordDetailPage() {
-  const { studentId } = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { data: healthRecord, isLoading } = useGetHealthRecordByStudent(
-    Number(studentId)
-  );
+  console.log('id from params:', id);
+  console.log('id after Number conversion:', Number(id));
+  const { data: healthRecord, isLoading } = useGetHealthRecordById(Number(id));
 
   if (isLoading) {
     return (
@@ -53,7 +53,7 @@ export default function HealthRecordDetailPage() {
     );
   }
 
-  if (!healthRecord?.data) {
+  if (!healthRecord) {
     return (
       <Card className="border-none shadow-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
@@ -71,8 +71,6 @@ export default function HealthRecordDetailPage() {
     );
   }
 
-  const record = healthRecord.data;
-
   return (
     <Card className="border-none shadow-md">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
@@ -88,9 +86,7 @@ export default function HealthRecordDetailPage() {
           </Button>
           <Button
             className="bg-teal-600 hover:bg-teal-700"
-            onClick={() =>
-              navigate(`/dashboard/student-records/edit/${record.id}`)
-            }
+            onClick={() => navigate(`/dashboard/student-records/add`)}
           >
             <Icons.pencil className="mr-2 h-4 w-4" />
             Chỉnh sửa
@@ -100,44 +96,63 @@ export default function HealthRecordDetailPage() {
 
       <CardContent className="pt-6">
         <dl className="divide-y divide-gray-100">
-          <InfoRow label="Họ và tên" value={record.studentName} />
-          <InfoRow label="Lớp" value={record.class} />
-          <InfoRow label="Ngày sinh" value={record.dateOfBirth} />
-          <InfoRow label="Giới tính" value={record.gender} />
-          <InfoRow label="Nhóm máu" value={record.bloodType} />
+          <InfoRow label="Họ và tên" value={healthRecord.student.fullName} />
+          <InfoRow label="Lớp" value={healthRecord.student.className} />
+          <InfoRow
+            label="Ngày sinh"
+            value={new Date(healthRecord.student.dob).toLocaleDateString(
+              'vi-VN'
+            )}
+          />
+          <InfoRow label="Giới tính" value={healthRecord.student.gender} />
           <InfoRow
             label="Dị ứng"
-            value={record.allergies}
-            badge={record.allergies !== 'Không'}
+            value={healthRecord.allergies}
+            badge={healthRecord.allergies !== 'Không'}
             badgeVariant="destructive"
           />
           <InfoRow
             label="Bệnh mãn tính"
-            value={record.chronicDiseases}
-            badge={record.chronicDiseases !== 'Không'}
+            value={healthRecord.chronicDiseases}
+            badge={healthRecord.chronicDiseases !== 'Không'}
             badgeVariant="destructive"
           />
-          <InfoRow label="Chiều cao" value={`${record.height} cm`} />
-          <InfoRow label="Cân nặng" value={`${record.weight} kg`} />
-          <InfoRow label="Thị lực mắt trái" value={record.visionLeft} />
-          <InfoRow label="Thị lực mắt phải" value={record.visionRight} />
           <InfoRow
-            label="Trạng thái"
-            value={record.status}
-            badge
-            badgeVariant={
-              record.status === 'Bình thường' ? 'success' : 'warning'
-            }
+            label="Tiền sử điều trị"
+            value={healthRecord.pastTreatments}
+            badge={healthRecord.pastTreatments !== 'Không'}
+            badgeVariant="warning"
           />
-          {record.note && <InfoRow label="Ghi chú" value={record.note} />}
+          <InfoRow
+            label="Thị lực"
+            value={healthRecord.vision}
+            badge={healthRecord.vision !== 'Bình thường'}
+            badgeVariant="warning"
+          />
+          <InfoRow
+            label="Thính lực"
+            value={healthRecord.hearing}
+            badge={healthRecord.hearing !== 'Bình thường'}
+            badgeVariant="warning"
+          />
+          <InfoRow
+            label="Tiêm chủng"
+            value={healthRecord.vaccinations}
+            badge={healthRecord.vaccinations !== 'Đầy đủ'}
+            badgeVariant="warning"
+          />
           <InfoRow
             label="Ngày tạo"
-            value={new Date(record.createdAt).toLocaleDateString('vi-VN')}
+            value={new Date(healthRecord.createdAt).toLocaleDateString('vi-VN')}
           />
-          <InfoRow
-            label="Cập nhật lần cuối"
-            value={new Date(record.updatedAt).toLocaleDateString('vi-VN')}
-          />
+          {healthRecord.updatedAt && (
+            <InfoRow
+              label="Cập nhật lần cuối"
+              value={new Date(healthRecord.updatedAt).toLocaleDateString(
+                'vi-VN'
+              )}
+            />
+          )}
         </dl>
       </CardContent>
     </Card>

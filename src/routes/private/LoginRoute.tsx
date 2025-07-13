@@ -3,6 +3,7 @@ import { login, setRole } from '@/redux/auth.slice';
 import { useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
+import { useEffect, useState } from 'react';
 
 interface LoginRouteProps {
   children: React.ReactNode;
@@ -10,26 +11,24 @@ interface LoginRouteProps {
 
 const LoginRoute = ({ children }: LoginRouteProps) => {
   const dispatch = useDispatch();
+  const [shouldNavigate, setShouldNavigate] = useState(false);
 
-  const token = __helpers.cookie_get('AT');
+  useEffect(() => {
+    const token = __helpers.cookie_get('AT');
 
-  if (token) {
-    try {
-      const decodedToken: any = jwtDecode(token);
-
-      const role =
-        decodedToken.is_admin === 'True'
-          ? 'Admin'
-          : decodedToken.is_manager === 'True'
-            ? 'Manager'
-            : 'Employee';
-      dispatch(setRole(role));
-      dispatch(login());
-    } catch (error) {
-      console.error('Error decoding JWT token:', error);
-      return <Navigate to={'/login'} replace />;
+    if (token) {
+      try {
+        dispatch(login());
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+        setShouldNavigate(true);
+      }
+    } else {
+      setShouldNavigate(true);
     }
-  } else {
+  }, [dispatch]);
+
+  if (shouldNavigate) {
     return <Navigate to={'/login'} replace />;
   }
 
