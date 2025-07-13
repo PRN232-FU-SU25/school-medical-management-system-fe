@@ -8,86 +8,32 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Icons } from '@/components/ui/icons';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-
-// Dữ liệu mẫu cho danh sách sự kiện y tế
-const medicalEventsData = [
-  {
-    id: 1,
-    studentName: 'Nguyễn Văn A',
-    class: '10A1',
-    eventType: 'Sốt',
-    date: '15/06/2023',
-    time: '09:30',
-    location: 'Phòng học 101',
-    severity: 'Trung bình',
-    status: 'Đã xử lý',
-    handler: 'BS. Trần Thị B'
-  },
-  {
-    id: 2,
-    studentName: 'Trần Thị C',
-    class: '11A2',
-    eventType: 'Té ngã',
-    date: '15/06/2023',
-    time: '10:15',
-    location: 'Sân trường',
-    severity: 'Nhẹ',
-    status: 'Đã xử lý',
-    handler: 'BS. Lê Văn D'
-  },
-  {
-    id: 3,
-    studentName: 'Lê Văn E',
-    class: '12B1',
-    eventType: 'Dị ứng',
-    date: '14/06/2023',
-    time: '14:20',
-    location: 'Căn tin',
-    severity: 'Nghiêm trọng',
-    status: 'Đang theo dõi',
-    handler: 'BS. Trần Thị B'
-  },
-  {
-    id: 4,
-    studentName: 'Phạm Thị G',
-    class: '10A3',
-    eventType: 'Đau đầu',
-    date: '14/06/2023',
-    time: '11:45',
-    location: 'Phòng y tế',
-    severity: 'Nhẹ',
-    status: 'Đã xử lý',
-    handler: 'BS. Lê Văn D'
-  }
-];
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  MedicalEventResponse,
+  useGetMedicalEvents
+} from '@/queries/medical-events.query';
 
 // Định nghĩa cột cho bảng
 const columns = [
   {
-    accessorKey: 'studentName',
+    accessorKey: 'studentFullName',
     header: 'Học sinh',
-    cell: ({ row }: any) => (
+    cell: ({ row }: { row: { original: MedicalEventResponse } }) => (
       <div className="font-medium text-teal-900">
-        {row.getValue('studentName')}
+        {row.original.studentFullName}
       </div>
-    )
-  },
-  {
-    accessorKey: 'class',
-    header: 'Lớp',
-    cell: ({ row }: any) => (
-      <div className="text-gray-600">{row.getValue('class')}</div>
     )
   },
   {
     accessorKey: 'eventType',
     header: 'Loại sự kiện',
-    cell: ({ row }: any) => (
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
         {row.getValue('eventType')}
       </span>
@@ -95,49 +41,32 @@ const columns = [
   },
   {
     accessorKey: 'date',
-    header: 'Ngày'
+    header: 'Ngày',
+    cell: ({ row }: { row: { original: MedicalEventResponse } }) => (
+      <div className="text-gray-600">
+        {new Date(row.original.date).toLocaleDateString('vi-VN')}
+      </div>
+    )
   },
   {
-    accessorKey: 'time',
-    header: 'Thời gian'
+    accessorKey: 'description',
+    header: 'Mô tả',
+    cell: ({ row }: { row: { original: MedicalEventResponse } }) => (
+      <div className="max-w-[200px] truncate text-gray-600">
+        {row.original.description || 'Không có mô tả'}
+      </div>
+    )
   },
   {
-    accessorKey: 'severity',
-    header: 'Mức độ',
-    cell: ({ row }: any) => {
-      const severity = row.getValue('severity');
-      const severityConfig = {
-        'Nghiêm trọng': { variant: 'destructive' },
-        'Trung bình': { variant: 'warning' },
-        Nhẹ: { variant: 'success' }
-      } as const;
-      const config = severityConfig[severity as keyof typeof severityConfig];
-      return <Badge variant={config.variant}>{severity}</Badge>;
-    }
-  },
-  {
-    accessorKey: 'status',
-    header: 'Trạng thái',
-    cell: ({ row }: any) => {
-      const status = row.getValue('status');
-      const statusConfig = {
-        'Đã xử lý': { variant: 'success' },
-        'Đang theo dõi': { variant: 'warning' }
-      } as const;
-      const config = statusConfig[status as keyof typeof statusConfig];
-      return <Badge variant={config.variant}>{status}</Badge>;
-    }
-  },
-  {
-    accessorKey: 'handler',
+    accessorKey: 'nurseFullName',
     header: 'Người xử lý',
-    cell: ({ row }: any) => (
-      <div className="text-gray-600">{row.getValue('handler')}</div>
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
+      <div className="text-gray-600">{row.getValue('nurseFullName')}</div>
     )
   },
   {
     id: 'actions',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { original: MedicalEventResponse } }) => {
       const event = row.original;
       return (
         <div className="flex justify-end gap-2">
@@ -147,18 +76,10 @@ const columns = [
             className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
             asChild
           >
-            <Link to={`/dashboard/medical-events/${event.id}`}>
+            <Link to={`/dashboard/medical-events/${event.medicalEventId}`}>
               <Icons.eye className="h-4 w-4" />
               <span className="sr-only">Xem chi tiết</span>
             </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
-          >
-            <Icons.pencil className="h-4 w-4" />
-            <span className="sr-only">Chỉnh sửa</span>
           </Button>
         </div>
       );
@@ -168,26 +89,67 @@ const columns = [
 
 export default function MedicalEventsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+  const [eventTypeFilter, setEventTypeFilter] = useState<string | undefined>(
     undefined
   );
-  const [severityFilter, setSeverityFilter] = useState<string | undefined>(
-    undefined
+  const [searchParams] = useSearchParams();
+
+  // Get page and limit from URL
+  const page = searchParams?.get('page') ?? '1';
+  const limit = searchParams?.get('limit') ?? '10';
+  const pageNumber = Number(page);
+  const pageSize = Number(limit);
+
+  const { data: medicalEventsData, isLoading } = useGetMedicalEvents(
+    pageNumber,
+    pageSize
   );
 
   // Lọc dữ liệu sự kiện y tế dựa trên các bộ lọc
-  const filteredEvents = medicalEventsData.filter((event) => {
+  const filteredEvents = (
+    (medicalEventsData?.items as MedicalEventResponse[]) || []
+  ).filter((event) => {
     const matchesSearch =
-      event.studentName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      event.studentFullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       event.eventType.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus =
-      !statusFilter || statusFilter === 'all' || event.status === statusFilter;
-    const matchesSeverity =
-      !severityFilter ||
-      severityFilter === 'all' ||
-      event.severity === severityFilter;
-    return matchesSearch && matchesStatus && matchesSeverity;
+    const matchesEventType =
+      !eventTypeFilter ||
+      eventTypeFilter === 'all' ||
+      event.eventType === eventTypeFilter;
+    return matchesSearch && matchesEventType;
   });
+
+  // Danh sách loại sự kiện duy nhất
+  const uniqueEventTypes = Array.from(
+    new Set(
+      ((medicalEventsData?.items as MedicalEventResponse[]) || []).map(
+        (event) => event.eventType
+      )
+    )
+  );
+
+  if (isLoading) {
+    return (
+      <Card className="border-none shadow-md">
+        <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+          <Skeleton className="h-8 w-[200px]" />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <Skeleton className="h-10 w-[250px]" />
+              <Skeleton className="h-10 w-[150px]" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -223,37 +185,32 @@ export default function MedicalEventsPage() {
                   className="pl-9 sm:max-w-[300px]"
                 />
               </div>
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select
+                value={eventTypeFilter}
+                onValueChange={setEventTypeFilter}
+              >
                 <SelectTrigger className="sm:max-w-[200px]">
-                  <SelectValue placeholder="Trạng thái" />
+                  <SelectValue placeholder="Loại sự kiện" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
-                  <SelectItem value="Đã xử lý">Đã xử lý</SelectItem>
-                  <SelectItem value="Đang theo dõi">Đang theo dõi</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select value={severityFilter} onValueChange={setSeverityFilter}>
-                <SelectTrigger className="sm:max-w-[200px]">
-                  <SelectValue placeholder="Mức độ" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tất cả mức độ</SelectItem>
-                  <SelectItem value="Nhẹ">Nhẹ</SelectItem>
-                  <SelectItem value="Trung bình">Trung bình</SelectItem>
-                  <SelectItem value="Nghiêm trọng">Nghiêm trọng</SelectItem>
+                  <SelectItem value="all">Tất cả loại sự kiện</SelectItem>
+                  {uniqueEventTypes.map((type, index) => (
+                    <SelectItem key={index} value={type}>
+                      {type}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
             {/* Bảng dữ liệu */}
-            <div className="flex flex-col gap-4 overflow-hidden bg-white">
-              <DataTable
-                columns={columns}
-                data={filteredEvents}
-                pageCount={1}
-              />
-            </div>
+            <DataTable
+              columns={columns}
+              data={filteredEvents}
+              pageCount={Math.ceil(
+                (medicalEventsData?.totalRecords || 0) / pageSize
+              )}
+            />
           </div>
         </CardContent>
       </Card>

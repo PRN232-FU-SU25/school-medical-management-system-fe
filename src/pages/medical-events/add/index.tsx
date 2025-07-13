@@ -1,10 +1,7 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
@@ -13,185 +10,262 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
+import { useCreateMedicalEvent } from '@/queries/medical-events.query';
+import { useGetSchoolNurses } from '@/queries/school-nurse.query';
+import { useGetStudents } from '@/queries/student.query';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+
+// Define event types based on the backend enum
+const eventTypes = [
+  { value: '0', label: 'Tai nạn (Accident)' },
+  { value: '1', label: 'Té ngã (Fall)' },
+  { value: '2', label: 'Sốt (Fever)' },
+  { value: '3', label: 'Bệnh khác (Illness)' },
+  { value: '4', label: 'Dịch bệnh (InfectiousDisease)' },
+  { value: '5', label: 'Chấn thương (Injury)' },
+  { value: '6', label: 'Đã cho dùng thuốc (MedicationGiven)' },
+  { value: '7', label: 'Khác (Other)' }
+];
 
 export default function AddMedicalEventPage() {
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const createMedicalEvent = useCreateMedicalEvent();
+
+  // Fetch students and nurses for dropdowns
+  const { data: studentsData, isLoading: isLoadingStudents } = useGetStudents(
+    1,
+    100
+  );
+  const { data: nursesData, isLoading: isLoadingNurses } = useGetSchoolNurses(
+    1,
+    100
+  );
+
+  const [formData, setFormData] = useState({
+    studentId: '',
+    eventType: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0],
+    handledBy: ''
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSelectChange = (name: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    // TODO: Implement form submission
-    setTimeout(() => {
-      setIsSubmitting(false);
+
+    try {
+      // Validate form data
+      if (!formData.studentId || !formData.eventType || !formData.date) {
+        toast({
+          title: 'Lỗi',
+          description: 'Vui lòng điền đầy đủ thông tin bắt buộc',
+          variant: 'destructive'
+        });
+        return;
+      }
+
+      // Convert form data to the expected format
+      const payload = {
+        studentId: parseInt(formData.studentId),
+        eventType: parseInt(formData.eventType),
+        description: formData.description,
+        date: new Date(formData.date),
+        handledBy: formData.handledBy ? parseInt(formData.handledBy) : undefined
+      };
+
+      await createMedicalEvent.mutateAsync(payload);
+
+      toast({
+        title: 'Thành công',
+        description: 'Đã tạo sự kiện y tế mới'
+      });
+
       navigate('/dashboard/medical-events');
-    }, 2000);
+    } catch (error) {
+      console.error('Error creating medical event:', error);
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể tạo sự kiện y tế. Vui lòng thử lại sau.',
+        variant: 'destructive'
+      });
+    }
   };
 
+  const isLoading =
+    isLoadingStudents || isLoadingNurses || createMedicalEvent.isPending;
+
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div className="space-y-6">
-          {/* Thông tin sự kiện */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Thông tin sự kiện</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="title">Tiêu đề</Label>
-                  <Input
-                    id="title"
-                    placeholder="Nhập tiêu đề sự kiện"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="type">Loại sự kiện</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn loại sự kiện" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="emergency">Cấp cứu</SelectItem>
-                      <SelectItem value="accident">Tai nạn</SelectItem>
-                      <SelectItem value="illness">Bệnh tật</SelectItem>
-                      <SelectItem value="injury">Chấn thương</SelectItem>
-                      <SelectItem value="other">Khác</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="date">Ngày xảy ra</Label>
-                  <Input id="date" type="datetime-local" required />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="location">Địa điểm</Label>
-                  <Input
-                    id="location"
-                    placeholder="Nhập địa điểm xảy ra"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Mô tả chi tiết</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Nhập mô tả chi tiết về sự kiện"
-                  className="min-h-[100px]"
-                  required
-                />
-              </div>
-            </CardContent>
-          </Card>
+    <Card className="border-none shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
+        <CardTitle className="text-teal-900">Thêm sự kiện y tế mới</CardTitle>
+        <Button asChild variant="outline">
+          <Link to="/dashboard/medical-events">
+            <Icons.chevronLeft className="mr-2 h-4 w-4" />
+            Quay lại
+          </Link>
+        </Button>
+      </CardHeader>
 
-          {/* Thông tin học sinh liên quan */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Thông tin học sinh liên quan</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="studentId">Mã học sinh</Label>
-                  <Input
-                    id="studentId"
-                    placeholder="Nhập mã học sinh"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="studentName">Họ và tên</Label>
-                  <Input
-                    id="studentName"
-                    placeholder="Nhập họ và tên học sinh"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="class">Lớp</Label>
-                  <Input id="class" placeholder="Nhập lớp" required />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      <CardContent className="pt-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <label
+                htmlFor="studentId"
+                className="text-sm font-medium text-gray-700"
+              >
+                Học sinh <span className="text-red-500">*</span>
+              </label>
+              <Select
+                value={formData.studentId}
+                onValueChange={(value) =>
+                  handleSelectChange('studentId', value)
+                }
+                disabled={isLoadingStudents}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn học sinh" />
+                </SelectTrigger>
+                <SelectContent>
+                  {studentsData?.items?.map((student) => (
+                    <SelectItem
+                      key={student.studentId}
+                      value={student.studentId?.toString()}
+                    >
+                      {student.fullName} - {student.className}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Thông tin xử lý */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Thông tin xử lý</CardTitle>
-            </CardHeader>
-            <CardContent className="grid gap-6">
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="handledBy">Người xử lý</Label>
-                  <Input
-                    id="handledBy"
-                    placeholder="Nhập tên người xử lý"
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="status">Trạng thái</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Chọn trạng thái" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">Đang xử lý</SelectItem>
-                      <SelectItem value="resolved">Đã xử lý</SelectItem>
-                      <SelectItem value="monitoring">Đang theo dõi</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="actions">Hành động xử lý</Label>
-                <Textarea
-                  id="actions"
-                  placeholder="Nhập các hành động đã thực hiện để xử lý sự kiện"
-                  className="min-h-[100px]"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="notes">Ghi chú</Label>
-                <Textarea
-                  id="notes"
-                  placeholder="Nhập ghi chú bổ sung (nếu có)"
-                  className="min-h-[100px]"
-                />
-              </div>
-            </CardContent>
-          </Card>
+            <div className="space-y-2">
+              <label
+                htmlFor="eventType"
+                className="text-sm font-medium text-gray-700"
+              >
+                Loại sự kiện <span className="text-red-500">*</span>
+              </label>
+              <Select
+                value={formData.eventType}
+                onValueChange={(value) =>
+                  handleSelectChange('eventType', value)
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn loại sự kiện" />
+                </SelectTrigger>
+                <SelectContent>
+                  {eventTypes.map((type, index) => (
+                    <SelectItem key={index} value={type.value}>
+                      {type.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          {/* Nút điều hướng */}
-          <div className="flex justify-end gap-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="date"
+                className="text-sm font-medium text-gray-700"
+              >
+                Ngày xảy ra <span className="text-red-500">*</span>
+              </label>
+              <Input
+                id="date"
+                name="date"
+                type="date"
+                value={formData.date}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="handledBy"
+                className="text-sm font-medium text-gray-700"
+              >
+                Người xử lý
+              </label>
+              <Select
+                value={formData.handledBy}
+                onValueChange={(value) =>
+                  handleSelectChange('handledBy', value)
+                }
+                disabled={isLoadingNurses}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Chọn y tá xử lý" />
+                </SelectTrigger>
+                <SelectContent>
+                  {nursesData?.items?.map((nurse, index) => (
+                    <SelectItem key={index} value={nurse.nurseId?.toString()}>
+                      {nurse.account.accountInfo.fullName}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2 md:col-span-2">
+              <label
+                htmlFor="description"
+                className="text-sm font-medium text-gray-700"
+              >
+                Mô tả
+              </label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="Nhập mô tả chi tiết về sự kiện y tế"
+                value={formData.description}
+                onChange={handleChange}
+                rows={4}
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => navigate('/dashboard/medical-events')}
+              disabled={isLoading}
             >
               Hủy
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? (
+            <Button
+              type="submit"
+              className="bg-teal-600 hover:bg-teal-700"
+              disabled={isLoading}
+            >
+              {isLoading ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  <span>Đang xử lý...</span>
+                  Đang xử lý...
                 </>
               ) : (
-                <>
-                  <Icons.check className="mr-2 h-4 w-4" />
-                  <span>Lưu sự kiện</span>
-                </>
+                'Lưu sự kiện'
               )}
             </Button>
           </div>
-        </div>
-      </form>
-    </>
+        </form>
+      </CardContent>
+    </Card>
   );
 }
