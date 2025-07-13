@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -30,15 +29,7 @@ export default function AddMedicationPage() {
   };
 
   return (
-    <BasePages
-      pageHead="Thêm thuốc mới | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý thuốc', link: '/dashboard/medications' },
-        { title: 'Thêm mới', link: '/dashboard/medications/add' }
-      ]}
-    >
+    <>
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Thông tin cơ bản */}
@@ -181,6 +172,6 @@ export default function AddMedicationPage() {
           </div>
         </div>
       </form>
-    </BasePages>
+    </>
   );
 }

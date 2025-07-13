@@ -1,4 +1,3 @@
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +11,8 @@ import { Icons } from '@/components/ui/icons';
 import { Link } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Dữ liệu mẫu cho danh sách học sinh
 const studentsData = [
@@ -71,44 +72,69 @@ const studentsData = [
 const columns = [
   {
     accessorKey: 'name',
-    header: 'Họ tên'
+    header: 'Họ tên',
+    cell: ({ row }: any) => (
+      <div className="font-medium text-teal-900">{row.getValue('name')}</div>
+    )
   },
   {
     accessorKey: 'class',
-    header: 'Lớp'
+    header: 'Lớp',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('class')}</div>
+    )
   },
   {
     accessorKey: 'dateOfBirth',
-    header: 'Ngày sinh'
+    header: 'Ngày sinh',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('dateOfBirth')}</div>
+    )
   },
   {
     accessorKey: 'gender',
-    header: 'Giới tính'
+    header: 'Giới tính',
+    cell: ({ row }: any) => (
+      <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+        {row.getValue('gender')}
+      </span>
+    )
   },
   {
     accessorKey: 'allergies',
-    header: 'Dị ứng'
+    header: 'Dị ứng',
+    cell: ({ row }: any) => {
+      const allergies = row.getValue('allergies');
+      return allergies === 'Không' ? (
+        <div className="text-gray-600">Không</div>
+      ) : (
+        <Badge variant="destructive">{allergies}</Badge>
+      );
+    }
   },
   {
     accessorKey: 'chronicDiseases',
-    header: 'Bệnh mãn tính'
+    header: 'Bệnh mãn tính',
+    cell: ({ row }: any) => {
+      const diseases = row.getValue('chronicDiseases');
+      return diseases === 'Không' ? (
+        <div className="text-gray-600">Không</div>
+      ) : (
+        <Badge variant="destructive">{diseases}</Badge>
+      );
+    }
   },
   {
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }: any) => {
       const status = row.getValue('status');
-      return (
-        <span
-          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-            status === 'Cần theo dõi'
-              ? 'bg-yellow-100 text-yellow-800'
-              : 'bg-green-100 text-green-800'
-          }`}
-        >
-          {status}
-        </span>
-      );
+      const statusConfig = {
+        'Bình thường': { variant: 'success' },
+        'Cần theo dõi': { variant: 'warning' }
+      } as const;
+      const config = statusConfig[status as keyof typeof statusConfig];
+      return <Badge variant={config.variant}>{status}</Badge>;
     }
   },
   {
@@ -116,8 +142,13 @@ const columns = [
     cell: ({ row }: any) => {
       const student = row.original;
       return (
-        <div className="flex space-x-2">
-          <Button asChild variant="ghost" size="icon">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+            asChild
+          >
             <Link to={`/dashboard/student-records/${student.id}`}>
               <Icons.eye className="h-4 w-4" />
               <span className="sr-only">Xem chi tiết</span>
@@ -131,16 +162,22 @@ const columns = [
 
 export default function StudentRecordsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [classFilter, setClassFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [classFilter, setClassFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
 
   // Lọc dữ liệu học sinh dựa trên các bộ lọc
   const filteredStudents = studentsData.filter((student) => {
     const matchesSearch = student.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
-    const matchesClass = classFilter ? student.class === classFilter : true;
-    const matchesStatus = statusFilter ? student.status === statusFilter : true;
+    const matchesClass =
+      !classFilter || classFilter === 'all' || student.class === classFilter;
+    const matchesStatus =
+      !statusFilter ||
+      statusFilter === 'all' ||
+      student.status === statusFilter;
     return matchesSearch && matchesClass && matchesStatus;
   });
 
@@ -155,70 +192,72 @@ export default function StudentRecordsPage() {
   );
 
   return (
-    <BasePages
-      pageHead="Hồ sơ sức khỏe học sinh | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Hồ sơ sức khỏe học sinh', link: '/dashboard/student-records' }
-      ]}
-    >
-      <div className="space-y-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h2 className="text-2xl font-bold">Hồ sơ sức khỏe học sinh</h2>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
+    <>
+      <Card className="border-none shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
+          <CardTitle className="text-teal-900">
+            Hồ sơ sức khỏe học sinh
+          </CardTitle>
+          <Button asChild className="bg-teal-600 hover:bg-teal-700">
             <Link to="/dashboard/student-records/add">
               <Icons.plus className="mr-2 h-4 w-4" />
               Thêm hồ sơ mới
             </Link>
           </Button>
-        </div>
+        </CardHeader>
 
-        {/* Bộ lọc và tìm kiếm */}
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="Tìm kiếm theo tên học sinh..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={classFilter} onValueChange={setClassFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Lọc theo lớp" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả lớp</SelectItem>
-                {uniqueClasses.map((className) => (
-                  <SelectItem key={className} value={className}>
-                    {className}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Lọc theo trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả trạng thái</SelectItem>
-                {uniqueStatuses.map((status) => (
-                  <SelectItem key={status} value={status}>
-                    {status}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            {/* Bộ lọc và tìm kiếm */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Icons.search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Tìm kiếm theo tên học sinh..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 sm:max-w-[300px]"
+                />
+              </div>
+              <Select value={classFilter} onValueChange={setClassFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Lọc theo lớp" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả lớp</SelectItem>
+                  {uniqueClasses.map((className) => (
+                    <SelectItem key={className} value={className}>
+                      {className}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Lọc theo trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  {uniqueStatuses.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Bảng dữ liệu */}
-        <DataTable columns={columns} data={filteredStudents} pageCount={1} />
-      </div>
-    </BasePages>
+            {/* Bảng dữ liệu */}
+            <div className="flex flex-col gap-4 overflow-hidden bg-white">
+              <DataTable
+                columns={columns}
+                data={filteredStudents}
+                pageCount={1}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

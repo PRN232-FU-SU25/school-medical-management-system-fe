@@ -105,15 +105,7 @@ export default function MedicationRequestsPage() {
       : requests.filter((request) => request.status === selectedStatus);
 
   return (
-    <BasePages
-      pageHead="Yêu cầu cấp thuốc | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý thuốc', link: '/dashboard/medications' },
-        { title: 'Yêu cầu cấp thuốc', link: '/dashboard/medications/requests' }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         {/* Thống kê */}
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -131,7 +123,7 @@ export default function MedicationRequestsPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Chờ duyệt</CardTitle>
-              <Icons.clock className="h-4 w-4 text-yellow-500" />
+              <Icons.ImageUp className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
@@ -263,6 +255,6 @@ export default function MedicationRequestsPage() {
           </CardContent>
         </Card>
       </div>
-    </BasePages>
+    </>
   );
 }

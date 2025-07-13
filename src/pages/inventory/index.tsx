@@ -1,4 +1,3 @@
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +11,7 @@ import { Icons } from '@/components/ui/icons';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Dữ liệu mẫu cho kho vật tư y tế
 const inventoryData = [
@@ -71,7 +71,7 @@ const inventoryStats = [
   {
     title: 'Cần bổ sung',
     value: '3',
-    icon: <Icons.alertTriangle className="h-5 w-5 text-yellow-600" />
+    icon: <Icons.shieldAlert className="h-5 w-5 text-yellow-600" />
   },
   {
     title: 'Sắp hết hạn',
@@ -89,11 +89,19 @@ const inventoryStats = [
 const columns = [
   {
     accessorKey: 'name',
-    header: 'Tên vật tư'
+    header: 'Tên vật tư',
+    cell: ({ row }: any) => (
+      <div className="font-medium text-teal-900">{row.getValue('name')}</div>
+    )
   },
   {
     accessorKey: 'category',
-    header: 'Phân loại'
+    header: 'Phân loại',
+    cell: ({ row }: any) => (
+      <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+        {row.getValue('category')}
+      </span>
+    )
   },
   {
     accessorKey: 'quantity',
@@ -101,7 +109,11 @@ const columns = [
     cell: ({ row }: any) => {
       const quantity = row.getValue('quantity');
       const unit = row.original.unit;
-      return `${quantity} ${unit}`;
+      return (
+        <div className="font-medium">
+          {quantity} {unit}
+        </div>
+      );
     }
   },
   {
@@ -110,50 +122,58 @@ const columns = [
     cell: ({ row }: any) => {
       const minQuantity = row.getValue('minQuantity');
       const unit = row.original.unit;
-      return `${minQuantity} ${unit}`;
+      return (
+        <div className="text-gray-600">
+          {minQuantity} {unit}
+        </div>
+      );
     }
   },
   {
     accessorKey: 'location',
-    header: 'Vị trí'
+    header: 'Vị trí',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('location')}</div>
+    )
   },
   {
     accessorKey: 'lastUpdated',
-    header: 'Cập nhật'
+    header: 'Cập nhật',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('lastUpdated')}</div>
+    )
   },
   {
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }: any) => {
       const status = row.getValue('status');
-      return (
-        <span
-          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-            status === 'Còn hàng'
-              ? 'bg-green-100 text-green-800'
-              : status === 'Sắp hết'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {status}
-        </span>
-      );
+      const statusConfig = {
+        'Còn hàng': { variant: 'success' },
+        'Sắp hết': { variant: 'warning' },
+        'Cần bổ sung': { variant: 'destructive' }
+      } as const;
+      const config = statusConfig[status as keyof typeof statusConfig];
+      return <Badge variant={config.variant}>{status}</Badge>;
     }
   },
   {
     id: 'actions',
     cell: ({ row }: any) => {
       return (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="icon">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+          >
             <Icons.pencil className="h-4 w-4" />
             <span className="sr-only">Chỉnh sửa</span>
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="text-red-500 hover:text-red-700"
+            className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
           >
             <Icons.trash className="h-4 w-4" />
             <span className="sr-only">Xóa</span>
@@ -166,102 +186,112 @@ const columns = [
 
 export default function InventoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(
+    undefined
+  );
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
 
   // Lọc dữ liệu vật tư dựa trên các bộ lọc
   const filteredInventory = inventoryData.filter((item) => {
     const matchesSearch =
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.location.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = categoryFilter
-      ? item.category === categoryFilter
-      : true;
-    const matchesStatus = statusFilter ? item.status === statusFilter : true;
+    const matchesCategory =
+      !categoryFilter ||
+      categoryFilter === 'all' ||
+      item.category === categoryFilter;
+    const matchesStatus =
+      !statusFilter || statusFilter === 'all' || item.status === statusFilter;
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
   return (
-    <BasePages
-      pageHead="Kho vật tư y tế | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Kho vật tư y tế', link: '/dashboard/inventory' }
-      ]}
-    >
-      <div className="space-y-6">
-        {/* Thống kê tổng quan */}
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {inventoryStats.map((stat, index) => (
-            <Card key={index}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  {stat.title}
-                </CardTitle>
-                {stat.icon}
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{stat.value}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+    <>
+      {/* Thống kê tổng quan */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {inventoryStats.map((stat, index) => (
+          <Card key={index} className="border-none shadow-sm">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-teal-900">
+                {stat.title}
+              </CardTitle>
+              {stat.icon}
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-teal-900">
+                {stat.value}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h2 className="text-2xl font-bold">Danh sách vật tư y tế</h2>
+      <Card className="mt-6 border-none shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
+          <CardTitle className="text-teal-900">Danh sách vật tư y tế</CardTitle>
           <div className="flex gap-2">
             <Button variant="outline" className="gap-2">
               <Icons.download className="h-4 w-4" />
               Xuất báo cáo
             </Button>
-            <Button className="gap-2 bg-blue-600 hover:bg-blue-700">
+            <Button className="gap-2 bg-teal-600 hover:bg-teal-700">
               <Icons.plus className="h-4 w-4" />
               Thêm vật tư mới
             </Button>
           </div>
-        </div>
+        </CardHeader>
 
-        {/* Bộ lọc và tìm kiếm */}
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="Tìm kiếm theo tên vật tư hoặc vị trí..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Phân loại" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả loại</SelectItem>
-                <SelectItem value="Vật tư tiêu hao">Vật tư tiêu hao</SelectItem>
-                <SelectItem value="Thiết bị y tế">Thiết bị y tế</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả trạng thái</SelectItem>
-                <SelectItem value="Còn hàng">Còn hàng</SelectItem>
-                <SelectItem value="Sắp hết">Sắp hết</SelectItem>
-                <SelectItem value="Cần bổ sung">Cần bổ sung</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            {/* Bộ lọc và tìm kiếm */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Icons.search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Tìm kiếm theo tên vật tư hoặc vị trí..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 sm:max-w-[300px]"
+                />
+              </div>
+              <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Phân loại" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả loại</SelectItem>
+                  <SelectItem value="Vật tư tiêu hao">
+                    Vật tư tiêu hao
+                  </SelectItem>
+                  <SelectItem value="Thiết bị y tế">Thiết bị y tế</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  <SelectItem value="Còn hàng">Còn hàng</SelectItem>
+                  <SelectItem value="Sắp hết">Sắp hết</SelectItem>
+                  <SelectItem value="Cần bổ sung">Cần bổ sung</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Bảng dữ liệu */}
-        <DataTable columns={columns} data={filteredInventory} pageCount={1} />
-      </div>
-    </BasePages>
+            {/* Bảng dữ liệu */}
+            <div className="flex flex-col gap-4 overflow-hidden bg-white">
+              <DataTable
+                columns={columns}
+                data={filteredInventory}
+                pageCount={1}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

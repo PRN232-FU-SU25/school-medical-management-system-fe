@@ -1,5 +1,3 @@
-import { useParams } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -14,8 +12,6 @@ import {
 } from '@/components/ui/table';
 
 export default function VaccinationDetailPage() {
-  const { id } = useParams();
-
   // Mock data for demonstration
   const campaign = {
     id: 1,
@@ -110,15 +106,7 @@ export default function VaccinationDetailPage() {
   };
 
   return (
-    <BasePages
-      pageHead={`Chi tiết chiến dịch: ${campaign.name} | Hệ thống quản lý y tế học đường`}
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Tiêm chủng', link: '/dashboard/vaccinations' },
-        { title: campaign.name, link: `/dashboard/vaccinations/${id}` }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         {/* Thông tin cơ bản */}
         <Card>
@@ -286,6 +274,6 @@ export default function VaccinationDetailPage() {
           </CardContent>
         </Card>
       </div>
-    </BasePages>
+    </>
   );
 }

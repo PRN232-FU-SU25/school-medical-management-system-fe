@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -105,15 +104,7 @@ export default function HealthCheckupCampaignPage() {
   };
 
   return (
-    <BasePages
-      pageHead="Chiến dịch khám sức khỏe | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Khám sức khỏe', link: '/dashboard/health-checkups' },
-        { title: 'Chiến dịch', link: '/dashboard/health-checkups/campaign' }
-      ]}
-    >
+    <>
       <Tabs defaultValue="list" className="space-y-6">
         <TabsList>
           <TabsTrigger value="list">Danh sách chiến dịch</TabsTrigger>
@@ -344,13 +335,7 @@ export default function HealthCheckupCampaignPage() {
 
               {/* Nút điều hướng */}
               <div className="flex justify-end gap-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() =>
-                    document.querySelector('[value="list"]')?.click()
-                  }
-                >
+                <Button type="button" variant="outline">
                   Hủy
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
@@ -371,6 +356,6 @@ export default function HealthCheckupCampaignPage() {
           </form>
         </TabsContent>
       </Tabs>
-    </BasePages>
+    </>
   );
 }

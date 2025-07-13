@@ -125,15 +125,7 @@ export default function HealthCheckupDetailPage() {
   };
 
   return (
-    <BasePages
-      pageHead={`Chi tiết chiến dịch: ${campaign.name} | Hệ thống quản lý y tế học đường`}
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Khám sức khỏe', link: '/dashboard/health-checkups' },
-        { title: campaign.name, link: `/dashboard/health-checkups/${id}` }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         {/* Thông tin cơ bản */}
         <Card>
@@ -301,6 +293,6 @@ export default function HealthCheckupDetailPage() {
           </CardContent>
         </Card>
       </div>
-    </BasePages>
+    </>
   );
 }

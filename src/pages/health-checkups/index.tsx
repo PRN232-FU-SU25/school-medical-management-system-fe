@@ -11,17 +11,10 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Icons } from '@/components/ui/icons';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
-} from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
+import DataTable from '@/components/shared/data-table';
 
 // Interface cho dữ liệu khám sức khỏe
 interface HealthCheckup {
@@ -35,6 +28,105 @@ interface HealthCheckup {
   status: string;
   result: string;
 }
+
+// Định nghĩa cột cho bảng
+const columns = [
+  {
+    accessorKey: 'student',
+    header: 'Học sinh',
+    cell: ({ row }: any) => (
+      <div>
+        <p className="font-medium text-teal-900">{row.original.studentName}</p>
+        <p className="text-sm text-gray-500">{row.original.studentId}</p>
+      </div>
+    )
+  },
+  {
+    accessorKey: 'class',
+    header: 'Lớp',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('class')}</div>
+    )
+  },
+  {
+    accessorKey: 'checkupDate',
+    header: 'Ngày khám',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('checkupDate')}</div>
+    )
+  },
+  {
+    accessorKey: 'type',
+    header: 'Loại khám',
+    cell: ({ row }: any) => (
+      <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+        {row.getValue('type')}
+      </span>
+    )
+  },
+  {
+    accessorKey: 'doctor',
+    header: 'Bác sĩ',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('doctor')}</div>
+    )
+  },
+  {
+    accessorKey: 'status',
+    header: 'Trạng thái',
+    cell: ({ row }: any) => {
+      const status = row.getValue('status');
+      const statusConfig = {
+        completed: { label: 'Đã khám', variant: 'success' },
+        scheduled: { label: 'Chờ khám', variant: 'warning' },
+        cancelled: { label: 'Đã hủy', variant: 'destructive' }
+      } as const;
+      const config =
+        statusConfig[status as keyof typeof statusConfig] ||
+        statusConfig.scheduled;
+      return <Badge variant={config.variant}>{config.label}</Badge>;
+    }
+  },
+  {
+    accessorKey: 'result',
+    header: 'Kết quả',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('result')}</div>
+    )
+  },
+  {
+    id: 'actions',
+    cell: ({ row }: any) => {
+      const checkup = row.original;
+      return (
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+            asChild
+          >
+            <Link to={`/dashboard/health-checkups/${checkup.id}`}>
+              <Icons.eye className="h-4 w-4" />
+              <span className="sr-only">Chi tiết</span>
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+            asChild
+          >
+            <Link to={`/dashboard/health-checkups/edit/${checkup.id}`}>
+              <Icons.pencil className="h-4 w-4" />
+              <span className="sr-only">Chỉnh sửa</span>
+            </Link>
+          </Button>
+        </div>
+      );
+    }
+  }
+];
 
 export default function HealthCheckups() {
   const [loading, setLoading] = useState(false);
@@ -91,20 +183,6 @@ export default function HealthCheckups() {
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  // Hàm render badge trạng thái
-  const getStatusBadge = (status: string) => {
-    const statusConfig = {
-      completed: { label: 'Đã khám', variant: 'success' },
-      scheduled: { label: 'Chờ khám', variant: 'warning' },
-      cancelled: { label: 'Đã hủy', variant: 'destructive' }
-    } as const;
-
-    const config =
-      statusConfig[status as keyof typeof statusConfig] ||
-      statusConfig.scheduled;
-    return <Badge variant={config.variant}>{config.label}</Badge>;
-  };
-
   if (loading) {
     return (
       <BasePages
@@ -139,14 +217,7 @@ export default function HealthCheckups() {
   }
 
   return (
-    <BasePages
-      pageHead="Quản lý khám sức khỏe | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý khám sức khỏe', link: '#' }
-      ]}
-    >
+    <>
       <Card className="border-none shadow-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
           <CardTitle className="text-teal-900">
@@ -195,110 +266,16 @@ export default function HealthCheckups() {
               </Select>
             </div>
 
-            <div className="overflow-hidden rounded-lg border border-gray-100 bg-white shadow-sm">
-              <Table>
-                <TableHeader className="bg-gray-50">
-                  <TableRow className="hover:bg-gray-50">
-                    <TableHead className="text-teal-900">Học sinh</TableHead>
-                    <TableHead className="text-teal-900">Lớp</TableHead>
-                    <TableHead className="text-teal-900">Ngày khám</TableHead>
-                    <TableHead className="text-teal-900">Loại khám</TableHead>
-                    <TableHead className="text-teal-900">Bác sĩ</TableHead>
-                    <TableHead className="text-teal-900">Trạng thái</TableHead>
-                    <TableHead className="text-teal-900">Kết quả</TableHead>
-                    <TableHead className="text-right text-teal-900">
-                      Thao tác
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredCheckups.length > 0 ? (
-                    filteredCheckups.map((checkup) => (
-                      <TableRow
-                        key={checkup.id}
-                        className="hover:bg-teal-50/30"
-                      >
-                        <TableCell>
-                          <div>
-                            <p className="font-medium text-teal-900">
-                              {checkup.studentName}
-                            </p>
-                            <p className="text-sm text-gray-500">
-                              {checkup.studentId}
-                            </p>
-                          </div>
-                        </TableCell>
-                        <TableCell>{checkup.class}</TableCell>
-                        <TableCell>{checkup.checkupDate}</TableCell>
-                        <TableCell>
-                          <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
-                            {checkup.type}
-                          </span>
-                        </TableCell>
-                        <TableCell>{checkup.doctor}</TableCell>
-                        <TableCell>{getStatusBadge(checkup.status)}</TableCell>
-                        <TableCell>{checkup.result}</TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
-                              asChild
-                            >
-                              <Link
-                                to={`/dashboard/health-checkups/${checkup.id}`}
-                              >
-                                <Icons.eye className="h-4 w-4" />
-                                <span className="sr-only">Chi tiết</span>
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
-                              asChild
-                            >
-                              <Link
-                                to={`/dashboard/health-checkups/edit/${checkup.id}`}
-                              >
-                                <Icons.pencil className="h-4 w-4" />
-                                <span className="sr-only">Chỉnh sửa</span>
-                              </Link>
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={8} className="h-24 text-center">
-                        <div className="flex flex-col items-center justify-center space-y-3 py-4 text-gray-500">
-                          <Icons.clipboardX className="h-10 w-10 text-gray-400" />
-                          <div className="text-sm">
-                            Không tìm thấy dữ liệu khám sức khỏe
-                          </div>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="mt-2"
-                            asChild
-                          >
-                            <Link to="/dashboard/health-checkups/add">
-                              <Icons.plus className="mr-2 h-4 w-4" />
-                              Thêm mới
-                            </Link>
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
+            <div className="flex flex-col gap-4 overflow-hidden bg-white">
+              <DataTable
+                columns={columns}
+                data={filteredCheckups}
+                pageCount={1}
+              />
             </div>
           </div>
         </CardContent>
       </Card>
-    </BasePages>
+    </>
   );
 }

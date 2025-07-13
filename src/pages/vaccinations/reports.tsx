@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import BasePages from '@/components/shared/base-pages';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
@@ -54,17 +53,12 @@ const consentStats = [
 ];
 
 export default function VaccinationReports() {
-  const [timeRange, setTimeRange] = useState('6months');
+  const [timeRange, setTimeRange] = useState<string | undefined>(undefined);
 
   // Hàm xuất báo cáo
   const exportReport = async (format: 'excel' | 'pdf') => {
     try {
       // TODO: Implement export functionality
-      // if (format === 'excel') {
-      //   await api.get('/vaccinations/export/excel', { responseType: 'blob' });
-      // } else {
-      //   await api.get('/vaccinations/export/pdf', { responseType: 'blob' });
-      // }
       console.log(`Exporting report as ${format}`);
     } catch (error) {
       console.error('Export failed:', error);
@@ -72,15 +66,7 @@ export default function VaccinationReports() {
   };
 
   return (
-    <BasePages
-      pageHead="Báo cáo tiêm chủng | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý tiêm chủng', link: '/dashboard/vaccinations' },
-        { title: 'Báo cáo', link: '#' }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <h2 className="text-2xl font-bold">Báo cáo thống kê tiêm chủng</h2>
@@ -236,6 +222,6 @@ export default function VaccinationReports() {
           </Card>
         </div>
       </div>
-    </BasePages>
+    </>
   );
 }

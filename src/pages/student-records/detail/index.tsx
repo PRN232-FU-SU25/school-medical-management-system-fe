@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -60,15 +59,7 @@ export default function StudentDetailPage() {
   };
 
   return (
-    <BasePages
-      pageHead={`Hồ sơ học sinh: ${student.name} | Hệ thống quản lý y tế học đường`}
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Hồ sơ học sinh', link: '/dashboard/student-records' },
-        { title: student.name, link: `/dashboard/student-records/${id}` }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         {/* Thông tin cơ bản */}
         <Card>
@@ -243,6 +234,6 @@ export default function StudentDetailPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </BasePages>
+    </>
   );
 }

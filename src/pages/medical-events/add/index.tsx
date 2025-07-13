@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -30,15 +29,7 @@ export default function AddMedicalEventPage() {
   };
 
   return (
-    <BasePages
-      pageHead="Thêm sự kiện y tế mới | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Sự kiện y tế', link: '/dashboard/medical-events' },
-        { title: 'Thêm mới', link: '/dashboard/medical-events/add' }
-      ]}
-    >
+    <>
       <form onSubmit={handleSubmit}>
         <div className="space-y-6">
           {/* Thông tin sự kiện */}
@@ -201,6 +192,6 @@ export default function AddMedicalEventPage() {
           </div>
         </div>
       </form>
-    </BasePages>
+    </>
   );
 }

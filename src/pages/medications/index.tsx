@@ -1,4 +1,3 @@
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +11,8 @@ import { Icons } from '@/components/ui/icons';
 import { Link } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Dữ liệu mẫu cho danh sách thuốc
 const medicationsData = [
@@ -65,15 +66,26 @@ const medicationsData = [
 const columns = [
   {
     accessorKey: 'name',
-    header: 'Tên thuốc/vật tư'
+    header: 'Tên thuốc/vật tư',
+    cell: ({ row }: any) => (
+      <div className="font-medium text-teal-900">{row.getValue('name')}</div>
+    )
   },
   {
     accessorKey: 'type',
-    header: 'Loại'
+    header: 'Loại',
+    cell: ({ row }: any) => (
+      <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+        {row.getValue('type')}
+      </span>
+    )
   },
   {
     accessorKey: 'dosage',
-    header: 'Hàm lượng'
+    header: 'Hàm lượng',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('dosage')}</div>
+    )
   },
   {
     accessorKey: 'quantity',
@@ -81,51 +93,58 @@ const columns = [
     cell: ({ row }: any) => {
       const quantity = row.getValue('quantity');
       const unit = row.original.unit;
-      return `${quantity} ${unit}`;
+      return (
+        <div className="font-medium">
+          {quantity} {unit}
+        </div>
+      );
     }
   },
   {
     accessorKey: 'expiryDate',
-    header: 'Hạn sử dụng'
+    header: 'Hạn sử dụng',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('expiryDate')}</div>
+    )
   },
   {
     accessorKey: 'manufacturer',
-    header: 'Nhà sản xuất'
+    header: 'Nhà sản xuất',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('manufacturer')}</div>
+    )
   },
   {
     accessorKey: 'status',
     header: 'Trạng thái',
     cell: ({ row }: any) => {
       const status = row.getValue('status');
-      return (
-        <span
-          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-            status === 'Còn hàng'
-              ? 'bg-green-100 text-green-800'
-              : status === 'Sắp hết'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-red-100 text-red-800'
-          }`}
-        >
-          {status}
-        </span>
-      );
+      const statusConfig = {
+        'Còn hàng': { variant: 'success' },
+        'Sắp hết': { variant: 'warning' },
+        'Cần nhập thêm': { variant: 'destructive' }
+      } as const;
+      const config = statusConfig[status as keyof typeof statusConfig];
+      return <Badge variant={config.variant}>{status}</Badge>;
     }
   },
   {
     id: 'actions',
     cell: ({ row }: any) => {
-      const medication = row.original;
       return (
-        <div className="flex space-x-2">
-          <Button variant="ghost" size="icon">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+          >
             <Icons.pencil className="h-4 w-4" />
             <span className="sr-only">Chỉnh sửa</span>
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="text-red-500 hover:text-red-700"
+            className="h-8 w-8 text-red-600 hover:bg-red-50 hover:text-red-700"
           >
             <Icons.trash className="h-4 w-4" />
             <span className="sr-only">Xóa</span>
@@ -138,33 +157,32 @@ const columns = [
 
 export default function MedicationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [typeFilter, setTypeFilter] = useState<string | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
 
   // Lọc dữ liệu thuốc dựa trên các bộ lọc
   const filteredMedications = medicationsData.filter((medication) => {
     const matchesSearch =
       medication.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       medication.manufacturer.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesType = typeFilter ? medication.type === typeFilter : true;
-    const matchesStatus = statusFilter
-      ? medication.status === statusFilter
-      : true;
+    const matchesType =
+      !typeFilter || typeFilter === 'all' || medication.type === typeFilter;
+    const matchesStatus =
+      !statusFilter ||
+      statusFilter === 'all' ||
+      medication.status === statusFilter;
     return matchesSearch && matchesType && matchesStatus;
   });
 
   return (
-    <BasePages
-      pageHead="Quản lý thuốc | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý thuốc', link: '/dashboard/medications' }
-      ]}
-    >
-      <div className="space-y-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h2 className="text-2xl font-bold">Quản lý thuốc và vật tư y tế</h2>
+    <>
+      <Card className="border-none shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
+          <CardTitle className="text-teal-900">
+            Quản lý thuốc và vật tư y tế
+          </CardTitle>
           <div className="flex gap-2">
             <Button asChild variant="outline" className="gap-2">
               <Link to="/dashboard/medications/requests">
@@ -172,57 +190,64 @@ export default function MedicationsPage() {
                 Yêu cầu thuốc
               </Link>
             </Button>
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild className="bg-teal-600 hover:bg-teal-700">
               <Link to="/dashboard/medications/add">
                 <Icons.plus className="mr-2 h-4 w-4" />
                 Thêm thuốc mới
               </Link>
             </Button>
           </div>
-        </div>
+        </CardHeader>
 
-        {/* Bộ lọc và tìm kiếm */}
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="Tìm kiếm theo tên thuốc hoặc nhà sản xuất..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Loại" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả loại</SelectItem>
-                <SelectItem value="Thuốc hạ sốt">Thuốc hạ sốt</SelectItem>
-                <SelectItem value="Sát trùng">Sát trùng</SelectItem>
-                <SelectItem value="Vật tư y tế">Vật tư y tế</SelectItem>
-                <SelectItem value="Thuốc điều trị">Thuốc điều trị</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả trạng thái</SelectItem>
-                <SelectItem value="Còn hàng">Còn hàng</SelectItem>
-                <SelectItem value="Sắp hết">Sắp hết</SelectItem>
-                <SelectItem value="Cần nhập thêm">Cần nhập thêm</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            {/* Bộ lọc và tìm kiếm */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Icons.search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Tìm kiếm theo tên thuốc hoặc nhà sản xuất..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 sm:max-w-[300px]"
+                />
+              </div>
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Loại" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả loại</SelectItem>
+                  <SelectItem value="Thuốc hạ sốt">Thuốc hạ sốt</SelectItem>
+                  <SelectItem value="Sát trùng">Sát trùng</SelectItem>
+                  <SelectItem value="Vật tư y tế">Vật tư y tế</SelectItem>
+                  <SelectItem value="Thuốc điều trị">Thuốc điều trị</SelectItem>
+                </SelectContent>
+              </Select>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  <SelectItem value="Còn hàng">Còn hàng</SelectItem>
+                  <SelectItem value="Sắp hết">Sắp hết</SelectItem>
+                  <SelectItem value="Cần nhập thêm">Cần nhập thêm</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Bảng dữ liệu */}
-        <DataTable columns={columns} data={filteredMedications} pageCount={1} />
-      </div>
-    </BasePages>
+            {/* Bảng dữ liệu */}
+            <div className="flex flex-col gap-4 overflow-hidden bg-white">
+              <DataTable
+                columns={columns}
+                data={filteredMedications}
+                pageCount={1}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

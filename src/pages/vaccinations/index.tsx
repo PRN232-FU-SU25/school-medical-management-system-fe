@@ -1,4 +1,3 @@
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -12,6 +11,8 @@ import { Icons } from '@/components/ui/icons';
 import { Link } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 // Dữ liệu mẫu cho danh sách tiêm chủng
 const vaccinationsData = [
@@ -65,23 +66,42 @@ const vaccinationsData = [
 const columns = [
   {
     accessorKey: 'campaignName',
-    header: 'Tên chiến dịch'
+    header: 'Tên chiến dịch',
+    cell: ({ row }: any) => (
+      <div className="font-medium text-teal-900">
+        {row.getValue('campaignName')}
+      </div>
+    )
   },
   {
     accessorKey: 'vaccineType',
-    header: 'Loại vắc xin'
+    header: 'Loại vắc xin',
+    cell: ({ row }: any) => (
+      <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
+        {row.getValue('vaccineType')}
+      </span>
+    )
   },
   {
     accessorKey: 'targetGroup',
-    header: 'Đối tượng'
+    header: 'Đối tượng',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('targetGroup')}</div>
+    )
   },
   {
     accessorKey: 'startDate',
-    header: 'Ngày bắt đầu'
+    header: 'Ngày bắt đầu',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('startDate')}</div>
+    )
   },
   {
     accessorKey: 'endDate',
-    header: 'Ngày kết thúc'
+    header: 'Ngày kết thúc',
+    cell: ({ row }: any) => (
+      <div className="text-gray-600">{row.getValue('endDate')}</div>
+    )
   },
   {
     accessorKey: 'progress',
@@ -94,7 +114,7 @@ const columns = [
         <div className="flex items-center gap-2">
           <div className="h-2 w-24 overflow-hidden rounded-full bg-gray-200">
             <div
-              className="h-full rounded-full bg-blue-600"
+              className="h-full rounded-full bg-teal-600"
               style={{ width: `${percentage}%` }}
             />
           </div>
@@ -108,19 +128,13 @@ const columns = [
     header: 'Trạng thái',
     cell: ({ row }: any) => {
       const status = row.getValue('status');
-      return (
-        <span
-          className={`inline-block rounded-full px-2 py-1 text-xs font-medium ${
-            status === 'Đang diễn ra'
-              ? 'bg-blue-100 text-blue-800'
-              : status === 'Sắp diễn ra'
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-green-100 text-green-800'
-          }`}
-        >
-          {status}
-        </span>
-      );
+      const statusConfig = {
+        'Đang diễn ra': { variant: 'warning' },
+        'Sắp diễn ra': { variant: 'default' },
+        'Đã hoàn thành': { variant: 'success' }
+      } as const;
+      const config = statusConfig[status as keyof typeof statusConfig];
+      return <Badge variant={config.variant}>{status}</Badge>;
     }
   },
   {
@@ -128,14 +142,23 @@ const columns = [
     cell: ({ row }: any) => {
       const vaccination = row.original;
       return (
-        <div className="flex space-x-2">
-          <Button asChild variant="ghost" size="icon">
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+            asChild
+          >
             <Link to={`/dashboard/vaccinations/${vaccination.id}`}>
               <Icons.eye className="h-4 w-4" />
               <span className="sr-only">Xem chi tiết</span>
             </Link>
           </Button>
-          <Button variant="ghost" size="icon">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+          >
             <Icons.pencil className="h-4 w-4" />
             <span className="sr-only">Chỉnh sửa</span>
           </Button>
@@ -147,7 +170,9 @@ const columns = [
 
 export default function VaccinationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
 
   // Lọc dữ liệu tiêm chủng dựa trên các bộ lọc
   const filteredVaccinations = vaccinationsData.filter((vaccination) => {
@@ -156,24 +181,18 @@ export default function VaccinationsPage() {
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
       vaccination.vaccineType.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = statusFilter
-      ? vaccination.status === statusFilter
-      : true;
+    const matchesStatus =
+      !statusFilter ||
+      statusFilter === 'all' ||
+      vaccination.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
 
   return (
-    <BasePages
-      pageHead="Quản lý tiêm chủng | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Quản lý tiêm chủng', link: '/dashboard/vaccinations' }
-      ]}
-    >
-      <div className="space-y-6">
-        <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <h2 className="text-2xl font-bold">Quản lý tiêm chủng</h2>
+    <>
+      <Card className="border-none shadow-md">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
+          <CardTitle className="text-teal-900">Quản lý tiêm chủng</CardTitle>
           <div className="flex gap-2">
             <Button asChild variant="outline" className="gap-2">
               <Link to="/dashboard/vaccinations/reports">
@@ -181,47 +200,52 @@ export default function VaccinationsPage() {
                 Báo cáo
               </Link>
             </Button>
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+            <Button asChild className="bg-teal-600 hover:bg-teal-700">
               <Link to="/dashboard/vaccinations/campaign">
                 <Icons.plus className="mr-2 h-4 w-4" />
                 Tạo chiến dịch mới
               </Link>
             </Button>
           </div>
-        </div>
+        </CardHeader>
 
-        {/* Bộ lọc và tìm kiếm */}
-        <div className="flex flex-col gap-4 md:flex-row">
-          <div className="flex-1">
-            <Input
-              placeholder="Tìm kiếm theo tên chiến dịch hoặc loại vắc xin..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full"
-            />
-          </div>
-          <div className="w-full md:w-48">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue placeholder="Trạng thái" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tất cả trạng thái</SelectItem>
-                <SelectItem value="Sắp diễn ra">Sắp diễn ra</SelectItem>
-                <SelectItem value="Đang diễn ra">Đang diễn ra</SelectItem>
-                <SelectItem value="Đã hoàn thành">Đã hoàn thành</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <CardContent className="pt-6">
+          <div className="space-y-6">
+            {/* Bộ lọc và tìm kiếm */}
+            <div className="flex flex-col gap-4 sm:flex-row">
+              <div className="relative flex-1">
+                <Icons.search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                <Input
+                  placeholder="Tìm kiếm theo tên chiến dịch hoặc loại vắc xin..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 sm:max-w-[300px]"
+                />
+              </div>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="sm:max-w-[200px]">
+                  <SelectValue placeholder="Trạng thái" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tất cả trạng thái</SelectItem>
+                  <SelectItem value="Sắp diễn ra">Sắp diễn ra</SelectItem>
+                  <SelectItem value="Đang diễn ra">Đang diễn ra</SelectItem>
+                  <SelectItem value="Đã hoàn thành">Đã hoàn thành</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Bảng dữ liệu */}
-        <DataTable
-          columns={columns}
-          data={filteredVaccinations}
-          pageCount={1}
-        />
-      </div>
-    </BasePages>
+            {/* Bảng dữ liệu */}
+            <div className="flex flex-col gap-4 overflow-hidden bg-white">
+              <DataTable
+                columns={columns}
+                data={filteredVaccinations}
+                pageCount={1}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

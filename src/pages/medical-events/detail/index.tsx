@@ -1,5 +1,4 @@
 import { useParams } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -85,15 +84,7 @@ export default function MedicalEventDetailPage() {
   };
 
   return (
-    <BasePages
-      pageHead={`Chi tiết sự kiện: ${event.title} | Hệ thống quản lý y tế học đường`}
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Sự kiện y tế', link: '/dashboard/medical-events' },
-        { title: event.title, link: `/dashboard/medical-events/${id}` }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         {/* Thông tin cơ bản */}
         <Card>
@@ -215,6 +206,6 @@ export default function MedicalEventDetailPage() {
           </CardContent>
         </Card>
       </div>
-    </BasePages>
+    </>
   );
 }
