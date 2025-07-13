@@ -14,7 +14,14 @@ export default function HomePage() {
   return (
     <>
       <Helmet>
-        <title>Trang chủ | Hệ thống quản lý y tế học đường</title>
+        <title>Trường THPT Chu Văn An | Hệ thống quản lý y tế học đường</title>
+        <style>
+          {`
+            html {
+              scroll-behavior: smooth;
+            }
+          `}
+        </style>
       </Helmet>
 
       {/* Hero Section */}
@@ -23,12 +30,13 @@ export default function HomePage() {
           <div className="flex flex-col items-center gap-8 md:flex-row">
             <div className="flex-1">
               <h1 className="mb-4 text-4xl font-bold text-blue-900 md:text-5xl">
-                Hệ thống quản lý y tế học đường
+                Trường THPT Chu Văn An
               </h1>
               <p className="mb-6 text-lg text-gray-600">
-                Giải pháp toàn diện cho việc quản lý sức khỏe học sinh, tiêm
-                chủng, kiểm tra y tế và xử lý các sự kiện y tế trong môi trường
-                học đường.
+                Hệ thống quản lý y tế học đường - Chăm sóc sức khỏe toàn diện
+                cho hơn 2000 học sinh của ngôi trường truyền thống 115 năm tuổi.
+                Nâng cao chất lượng giáo dục thông qua việc đảm bảo sức khỏe thể
+                chất và tinh thần cho thế hệ tương lai.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button
@@ -39,16 +47,74 @@ export default function HomePage() {
                   <Link to="/dashboard">Đăng nhập hệ thống</Link>
                 </Button>
                 <Button asChild variant="outline" size="lg">
-                  <Link to="/resources">Tài nguyên y tế</Link>
+                  <a href="#resources" className="scroll-smooth">
+                    Tài nguyên y tế
+                  </a>
                 </Button>
               </div>
             </div>
-            <div className="flex-1">
+            <div className="flex flex-1 items-center justify-center">
               <img
-                src="/images/hero-image.svg"
+                src="/images/Logo_THPT_Chu_Van_An.jpg"
                 alt="School Medical Management"
-                className="h-auto w-full rounded-lg shadow-lg"
+                className="h-auto w-[250px] rounded-lg shadow-lg"
               />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* School Information Section */}
+      <section className="bg-white py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-12 text-center text-3xl font-bold text-blue-900">
+            Giới thiệu về trường THPT Chu Văn An
+          </h2>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+            <div>
+              <h3 className="mb-4 text-2xl font-semibold text-blue-800">
+                Tầm nhìn & Sứ mệnh
+              </h3>
+              <p className="mb-6 text-gray-600">
+                Trường THPT Chu Văn An, thành lập năm 1908, là một trong những
+                trường THPT lâu đời và có truyền thống nhất tại Hà Nội. Với
+                phương châm "Tiến đức - Luyện tài", nhà trường không chỉ chú
+                trọng đào tạo kiến thức mà còn đặc biệt quan tâm đến sức khỏe
+                thể chất và tinh thần của học sinh.
+              </p>
+              <div className="mb-6 rounded-lg bg-blue-50 p-4">
+                <h4 className="mb-2 font-semibold text-blue-800">
+                  Thống kê y tế trường học
+                </h4>
+                <ul className="list-inside list-disc text-gray-600">
+                  <li>Phục vụ 2000+ học sinh và 200+ cán bộ, giáo viên</li>
+                  <li>
+                    Đội ngũ y tế chuyên trách 24/7 (3 y bác sĩ thường trực)
+                  </li>
+                  <li>Phòng y tế 150m² với trang thiết bị hiện đại</li>
+                  <li>100% học sinh được khám sức khỏe định kỳ 2 lần/năm</li>
+                  <li>Tỷ lệ tiêm chủng đạt 99.8% năm học 2023-2024</li>
+                </ul>
+              </div>
+            </div>
+            <div className="space-y-6">
+              <img
+                src="/images/school-facility.jpg"
+                alt="Cơ sở vật chất trường THPT Chu Văn An"
+                className="h-64 w-full rounded-lg object-cover shadow-lg"
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <img
+                  src="/images/medical-room.jpg"
+                  alt="Phòng y tế trường THPT Chu Văn An"
+                  className="h-40 w-full rounded-lg object-cover shadow-lg"
+                />
+                <img
+                  src="/images/student-checkup.jpg"
+                  alt="Khám sức khỏe định kỳ cho học sinh"
+                  className="h-40 w-full rounded-lg object-cover shadow-lg"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -58,7 +124,7 @@ export default function HomePage() {
       <section className="bg-white py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold text-blue-900">
-            Tính năng chính
+            Dịch vụ y tế học đường
           </h2>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -66,46 +132,128 @@ export default function HomePage() {
               <CardHeader>
                 <CardTitle>Hồ sơ sức khỏe học sinh</CardTitle>
                 <CardDescription>
-                  Quản lý thông tin sức khỏe toàn diện
+                  Quản lý thông tin sức khỏe chi tiết cho từng em
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p>
-                  Lưu trữ và quản lý thông tin về dị ứng, bệnh mãn tính, tiền sử
-                  điều trị, thị lực, thính lực và lịch sử tiêm chủng của học
-                  sinh.
+                  Theo dõi toàn diện về dị ứng, tiền sử bệnh, chỉ số phát triển,
+                  thị lực, thính lực và lịch sử tiêm chủng của 2000+ học sinh
+                  qua hệ thống điện tử.
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Quản lý sự kiện y tế</CardTitle>
+                <CardTitle>Chăm sóc y tế thường ngày</CardTitle>
                 <CardDescription>
-                  Xử lý các tình huống y tế tại trường
+                  Đội ngũ y tế chuyên trách 24/7
                 </CardDescription>
               </CardHeader>
               <CardContent>
                 <p>
-                  Ghi nhận và xử lý các sự kiện y tế như tai nạn, sốt, té ngã,
-                  dịch bệnh và các tình huống khẩn cấp khác.
+                  Xử lý kịp thời các sự cố y tế, từ những tình huống nhẹ như
+                  sốt, đau đầu đến các trường hợp khẩn cấp. Phối hợp chặt chẽ
+                  với Bệnh viện Đại học Y Hà Nội trong các ca cần thiết.
                 </p>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Tiêm chủng và kiểm tra y tế</CardTitle>
-                <CardDescription>
-                  Quản lý các chiến dịch y tế tại trường
-                </CardDescription>
+                <CardTitle>Chương trình y tế định kỳ</CardTitle>
+                <CardDescription>Chăm sóc sức khỏe có kế hoạch</CardDescription>
               </CardHeader>
               <CardContent>
                 <p>
-                  Tổ chức và quản lý các chiến dịch tiêm chủng và kiểm tra y tế
-                  định kỳ, từ lập kế hoạch đến theo dõi kết quả.
+                  Tổ chức khám sức khỏe định kỳ 2 lần/năm, tiêm chủng theo
+                  chương trình quốc gia, và các hoạt động giáo dục sức khỏe
+                  thường xuyên cho học sinh.
                 </p>
               </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Health Resources Section */}
+      <section id="resources" className="bg-blue-50 py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="mb-12 text-center text-3xl font-bold text-blue-900">
+            Tài liệu y tế trường học
+          </h2>
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <Card>
+              <CardHeader>
+                <CardTitle>Hướng dẫn y tế</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-inside list-disc space-y-2 text-gray-600">
+                  <li>Quy trình xử lý tai nạn học đường</li>
+                  <li>Phòng chống dịch COVID-19</li>
+                  <li>Chế độ dinh dưỡng cho học sinh</li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="ghost">
+                  <Link to="/resources/guidelines">Xem thêm</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Biểu mẫu y tế</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-inside list-disc space-y-2 text-gray-600">
+                  <li>Sổ khám sức khỏe định kỳ</li>
+                  <li>Đơn xin nghỉ ốm có xác nhận</li>
+                  <li>Phiếu theo dõi tiêm chủng</li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="ghost">
+                  <Link to="/resources/forms">Xem thêm</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Quy định & Chính sách</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-inside list-disc space-y-2 text-gray-600">
+                  <li>Nội quy phòng y tế trường</li>
+                  <li>Quy định bảo hiểm y tế học sinh</li>
+                  <li>Chính sách hỗ trợ y tế đặc biệt</li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="ghost">
+                  <Link to="/resources/policies">Xem thêm</Link>
+                </Button>
+              </CardFooter>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Tài liệu tham khảo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-inside list-disc space-y-2 text-gray-600">
+                  <li>Cẩm nang sức khỏe học đường</li>
+                  <li>Tài liệu giáo dục giới tính</li>
+                  <li>Hướng dẫn sơ cấp cứu cơ bản</li>
+                </ul>
+              </CardContent>
+              <CardFooter>
+                <Button asChild variant="ghost">
+                  <Link to="/resources/library">Xem thêm</Link>
+                </Button>
+              </CardFooter>
             </Card>
           </div>
         </div>
@@ -115,61 +263,68 @@ export default function HomePage() {
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-4">
           <h2 className="mb-12 text-center text-3xl font-bold text-blue-900">
-            Bài viết mới nhất
+            Tin tức & Hoạt động y tế
           </h2>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {/* Blog posts would be mapped here */}
             <Card>
               <CardHeader>
-                <CardTitle>Phòng ngừa bệnh mùa hè trong trường học</CardTitle>
-                <CardDescription>15/06/2023 • Y tế học đường</CardDescription>
+                <CardTitle>
+                  Kế hoạch khám sức khỏe định kỳ học kỳ II năm 2024
+                </CardTitle>
+                <CardDescription>
+                  20/02/2024 • Thông báo chính thức
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="line-clamp-3">
-                  Các biện pháp phòng ngừa bệnh truyền nhiễm trong mùa hè và
-                  cách bảo vệ sức khỏe học sinh trong thời tiết nắng nóng...
+                  Nhà trường tổ chức khám sức khỏe định kỳ cho học sinh từ ngày
+                  01/03 đến 15/03/2024. Xem lịch khám chi tiết theo từng lớp...
                 </p>
               </CardContent>
               <CardFooter>
                 <Button asChild variant="ghost">
-                  <Link to="/blog/1">Đọc tiếp</Link>
+                  <Link to="/blog/health-checkup-2024">Đọc tiếp</Link>
                 </Button>
               </CardFooter>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Dinh dưỡng học đường và sức khỏe</CardTitle>
-                <CardDescription>10/06/2023 • Dinh dưỡng</CardDescription>
+                <CardTitle>
+                  Hướng dẫn phòng chống cúm mùa trong trường học
+                </CardTitle>
+                <CardDescription>15/02/2024 • Y tế dự phòng</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="line-clamp-3">
-                  Tầm quan trọng của chế độ dinh dưỡng cân bằng đối với sự phát
-                  triển thể chất và tinh thần của học sinh...
+                  Trước tình hình dịch cúm mùa đang gia tăng, phòng y tế trường
+                  hướng dẫn các biện pháp phòng ngừa hiệu quả...
                 </p>
               </CardContent>
               <CardFooter>
                 <Button asChild variant="ghost">
-                  <Link to="/blog/2">Đọc tiếp</Link>
+                  <Link to="/blog/flu-prevention">Đọc tiếp</Link>
                 </Button>
               </CardFooter>
             </Card>
 
             <Card>
               <CardHeader>
-                <CardTitle>Sơ cứu cơ bản trong trường học</CardTitle>
-                <CardDescription>05/06/2023 • Sơ cứu</CardDescription>
+                <CardTitle>
+                  Kết quả khảo sát dinh dưỡng học đường 2023
+                </CardTitle>
+                <CardDescription>10/02/2024 • Báo cáo y tế</CardDescription>
               </CardHeader>
               <CardContent>
                 <p className="line-clamp-3">
-                  Hướng dẫn các kỹ thuật sơ cứu cơ bản dành cho giáo viên và
-                  nhân viên y tế học đường khi xảy ra tình huống khẩn cấp...
+                  Tổng hợp kết quả khảo sát thói quen ăn uống và tình trạng dinh
+                  dưỡng của học sinh năm học 2023-2024...
                 </p>
               </CardContent>
               <CardFooter>
                 <Button asChild variant="ghost">
-                  <Link to="/blog/3">Đọc tiếp</Link>
+                  <Link to="/blog/nutrition-survey">Đọc tiếp</Link>
                 </Button>
               </CardFooter>
             </Card>
@@ -177,7 +332,7 @@ export default function HomePage() {
 
           <div className="mt-8 text-center">
             <Button asChild variant="outline">
-              <Link to="/blog">Xem tất cả bài viết</Link>
+              <Link to="/blog">Xem tất cả tin tức</Link>
             </Button>
           </div>
         </div>
@@ -187,18 +342,19 @@ export default function HomePage() {
       <section className="bg-blue-900 py-16 text-white">
         <div className="container mx-auto px-4 text-center">
           <h2 className="mb-6 text-3xl font-bold">
-            Sẵn sàng nâng cao chất lượng y tế học đường?
+            Cùng chăm sóc sức khỏe cho con em chúng ta
           </h2>
           <p className="mx-auto mb-8 max-w-2xl text-lg">
-            Hệ thống quản lý y tế học đường giúp nhà trường và phụ huynh theo
-            dõi sức khỏe học sinh một cách hiệu quả và toàn diện.
+            Hệ thống quản lý y tế trường THPT Chu Văn An giúp phụ huynh và nhà
+            trường theo dõi sát sao sức khỏe của các em, đảm bảo một môi trường
+            học tập khỏe mạnh và an toàn.
           </p>
           <Button
             asChild
             size="lg"
             className="bg-white text-blue-900 hover:bg-gray-100"
           >
-            <Link to="/dashboard">Bắt đầu ngay</Link>
+            <Link to="/dashboard">Truy cập hệ thống</Link>
           </Button>
         </div>
       </section>

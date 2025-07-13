@@ -2,9 +2,6 @@ import ScrollToTop from '@/hooks/scroll-to-top';
 import NotFound from '@/pages/not-found';
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
-import RoleRoute from './private/RoleRoute';
-import LoginRoute from './private/LoginRoute';
-
 const AuthLayout = lazy(() => import('@/components/layout/auth-layout'));
 const LoginPage = lazy(() => import('@/pages/auth/login'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
@@ -19,6 +16,10 @@ const HomePage = lazy(() => import('@/pages/home'));
 const BlogPage = lazy(() => import('@/pages/blog'));
 const BlogDetailPage = lazy(() => import('@/pages/blog/detail'));
 const ResourcesPage = lazy(() => import('@/pages/resources'));
+const GuidelinesPage = lazy(() => import('@/pages/resources/guidelines'));
+const FormsPage = lazy(() => import('@/pages/resources/forms'));
+const LibraryPage = lazy(() => import('@/pages/resources/library'));
+const PoliciesPage = lazy(() => import('@/pages/resources/policies'));
 
 // Dashboard Pages
 const DashboardPage = lazy(() => import('@/pages/dashboard'));
@@ -98,6 +99,22 @@ export default function AppRouter() {
         {
           path: '/resources',
           element: <ResourcesPage />
+        },
+        {
+          path: '/resources/guidelines',
+          element: <GuidelinesPage />
+        },
+        {
+          path: '/resources/forms',
+          element: <FormsPage />
+        },
+        {
+          path: '/resources/library',
+          element: <LibraryPage />
+        },
+        {
+          path: '/resources/policies',
+          element: <PoliciesPage />
         },
         {
           path: '/privacy',
