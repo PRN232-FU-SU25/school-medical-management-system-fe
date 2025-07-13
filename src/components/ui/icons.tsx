@@ -89,12 +89,17 @@ import {
   PieChart,
   LineChart,
   FileBarChart,
-  ClipboardX
+  ClipboardX,
+  Clock,
+  Inbox
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  x: X,
+  inbox: Inbox,
+  clock: Clock,
   download: Download,
   fileType: FileType,
   dot: Dot,

@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -20,61 +19,37 @@ import {
   TableRow
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/components/ui/use-toast';
+import { Link, useSearchParams } from 'react-router-dom';
+import {
+  ParentMedicationRequestResponse,
+  useGetMedicationRequests,
+  useUpdateMedicationRequestStatus
+} from '@/queries/medication-requests.query';
 
 export default function MedicationRequestsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const { toast } = useToast();
+  const [searchParams] = useSearchParams();
 
-  // Mock data for demonstration
-  const requests = [
-    {
-      id: 1,
-      studentName: 'Nguyễn Văn A',
-      studentId: 'SV001',
-      class: '10A1',
-      medicationName: 'Paracetamol',
-      dosage: '500mg',
-      frequency: '3 lần/ngày',
-      startDate: '15/01/2024',
-      endDate: '17/01/2024',
-      reason: 'Sốt nhẹ',
-      status: 'pending',
-      requestedBy: 'Nguyễn Thị B (Phụ huynh)',
-      requestDate: '14/01/2024'
-    },
-    {
-      id: 2,
-      studentName: 'Trần Thị C',
-      studentId: 'SV002',
-      class: '11A2',
-      medicationName: 'Ventolin',
-      dosage: '2 nhát xịt',
-      frequency: 'Khi cần',
-      startDate: '10/01/2024',
-      endDate: '10/02/2024',
-      reason: 'Hen suyễn',
-      status: 'approved',
-      requestedBy: 'Trần Văn D (Phụ huynh)',
-      requestDate: '09/01/2024'
-    },
-    {
-      id: 3,
-      studentName: 'Lê Văn E',
-      studentId: 'SV003',
-      class: '12A3',
-      medicationName: 'Cetirizine',
-      dosage: '10mg',
-      frequency: '1 lần/ngày',
-      startDate: '12/01/2024',
-      endDate: '19/01/2024',
-      reason: 'Dị ứng phấn hoa',
-      status: 'rejected',
-      requestedBy: 'Lê Thị F (Phụ huynh)',
-      requestDate: '11/01/2024'
-    }
-  ];
+  // Get page and limit from URL
+  const page = searchParams?.get('page') ?? '1';
+  const limit = searchParams?.get('limit') ?? '10';
+  const pageNumber = Number(page);
+  const pageSize = Number(limit);
+
+  const {
+    data: requestsData,
+    isLoading,
+    refetch
+  } = useGetMedicationRequests(pageNumber, pageSize);
+
+  const updateStatus = useUpdateMedicationRequestStatus();
 
   const getStatusColor = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'approved':
@@ -87,7 +62,7 @@ export default function MedicationRequestsPage() {
   };
 
   const getStatusText = (status: string) => {
-    switch (status) {
+    switch (status.toLowerCase()) {
       case 'pending':
         return 'Chờ duyệt';
       case 'approved':
@@ -99,10 +74,89 @@ export default function MedicationRequestsPage() {
     }
   };
 
-  const filteredRequests =
-    selectedStatus === 'all'
-      ? requests
-      : requests.filter((request) => request.status === selectedStatus);
+  const handleUpdateStatus = async (id: number, status: string) => {
+    try {
+      await updateStatus.mutateAsync({ id, status });
+      toast({
+        title: 'Thành công',
+        description: `Đã cập nhật trạng thái thành ${getStatusText(status)}`
+      });
+      refetch();
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: 'Lỗi',
+        description: 'Không thể cập nhật trạng thái. Vui lòng thử lại sau.',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  // Filter requests based on status and search query
+  const filteredRequests = (
+    (requestsData?.items as ParentMedicationRequestResponse[]) || []
+  ).filter((request) => {
+    const matchesStatus =
+      selectedStatus === 'all' ||
+      request.status.toLowerCase() === selectedStatus.toLowerCase();
+
+    // Note: This is a simplified search since we don't have student name in the response
+    // In a real app, you might want to fetch student details or have them in the response
+    const matchesSearch = searchQuery
+      ? request.medicationItems.some((item) =>
+          item.medicineName.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+      : true;
+
+    return matchesStatus && matchesSearch;
+  });
+
+  // Count requests by status
+  const pendingCount = (requestsData?.items || []).filter(
+    (request: ParentMedicationRequestResponse) =>
+      request.status.toLowerCase() === 'pending'
+  ).length;
+
+  const approvedCount = (requestsData?.items || []).filter(
+    (request: ParentMedicationRequestResponse) =>
+      request.status.toLowerCase() === 'approved'
+  ).length;
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-8 w-12" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardContent className="p-6">
+            <Skeleton className="h-10 w-full" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -117,18 +171,18 @@ export default function MedicationRequestsPage() {
               <Icons.clipboardList className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{requests.length}</div>
+              <div className="text-2xl font-bold">
+                {requestsData?.totalRecords || 0}
+              </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Chờ duyệt</CardTitle>
-              <Icons.ImageUp className="h-4 w-4 text-yellow-500" />
+              <Icons.clock className="h-4 w-4 text-yellow-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {requests.filter((r) => r.status === 'pending').length}
-              </div>
+              <div className="text-2xl font-bold">{pendingCount}</div>
             </CardContent>
           </Card>
           <Card>
@@ -137,9 +191,7 @@ export default function MedicationRequestsPage() {
               <Icons.check className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
-                {requests.filter((r) => r.status === 'approved').length}
-              </div>
+              <div className="text-2xl font-bold">{approvedCount}</div>
             </CardContent>
           </Card>
         </div>
@@ -148,8 +200,10 @@ export default function MedicationRequestsPage() {
         <Card>
           <CardContent className="flex flex-col gap-4 p-6 sm:flex-row">
             <Input
-              placeholder="Tìm kiếm theo tên học sinh, mã số..."
+              placeholder="Tìm kiếm theo tên thuốc..."
               className="flex-1"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Select value={selectedStatus} onValueChange={setSelectedStatus}>
               <SelectTrigger className="w-full sm:w-[180px]">
@@ -167,91 +221,142 @@ export default function MedicationRequestsPage() {
 
         {/* Danh sách yêu cầu */}
         <Card>
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Danh sách yêu cầu</CardTitle>
+            <Button asChild className="bg-teal-600 hover:bg-teal-700">
+              <Link to="/dashboard/medications/requests/add">
+                <Icons.plus className="mr-2 h-4 w-4" />
+                Tạo yêu cầu mới
+              </Link>
+            </Button>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Học sinh</TableHead>
-                  <TableHead>Thuốc</TableHead>
-                  <TableHead>Thời gian</TableHead>
-                  <TableHead>Lý do</TableHead>
-                  <TableHead>Người yêu cầu</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Thao tác</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredRequests.map((request) => (
-                  <TableRow key={request.id}>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{request.studentName}</p>
-                        <p className="text-sm text-gray-500">
-                          {request.studentId} - {request.class}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">{request.medicationName}</p>
-                        <p className="text-sm text-gray-500">
-                          {request.dosage} - {request.frequency}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div>
-                        <p className="font-medium">
-                          {request.startDate} - {request.endDate}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          Yêu cầu: {request.requestDate}
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>{request.reason}</TableCell>
-                    <TableCell>{request.requestedBy}</TableCell>
-                    <TableCell>
-                      <Badge className={getStatusColor(request.status)}>
-                        {getStatusText(request.status)}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-8 w-8 p-0"
-                        >
-                          <Icons.eye className="h-4 w-4" />
-                        </Button>
-                        {request.status === 'pending' && (
-                          <>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
-                            >
-                              <Icons.check className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                            >
-                              <Icons.close className="h-4 w-4" />
-                            </Button>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
+            {filteredRequests.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>ID</TableHead>
+                    <TableHead>Học sinh ID</TableHead>
+                    <TableHead>Thuốc</TableHead>
+                    <TableHead>Thời gian</TableHead>
+                    <TableHead>Trạng thái</TableHead>
+                    <TableHead className="text-right">Thao tác</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredRequests.map((request) => (
+                    <TableRow key={request.parentMedicationRequestId}>
+                      <TableCell>
+                        <div className="font-medium">
+                          {request.parentMedicationRequestId}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="font-medium">{request.studentId}</div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          {request.medicationItems.map((item, index) => (
+                            <div key={index} className="mb-1">
+                              <p className="font-medium">{item.medicineName}</p>
+                              <p className="text-sm text-gray-500">
+                                {item.dosage}{' '}
+                                {item.timeOfDay ? `- ${item.timeOfDay}` : ''}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">
+                            {new Date(request.startDate).toLocaleDateString(
+                              'vi-VN'
+                            )}{' '}
+                            -{' '}
+                            {new Date(request.endDate).toLocaleDateString(
+                              'vi-VN'
+                            )}
+                          </p>
+                          <p className="text-sm text-gray-500">
+                            Yêu cầu:{' '}
+                            {new Date(request.createdAt).toLocaleDateString(
+                              'vi-VN'
+                            )}
+                          </p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={getStatusColor(request.status)}>
+                          {getStatusText(request.status)}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 w-8 p-0"
+                            asChild
+                          >
+                            <Link
+                              to={`/dashboard/medications/requests/${request.parentMedicationRequestId}`}
+                            >
+                              <Icons.eye className="h-4 w-4" />
+                              <span className="sr-only">Xem chi tiết</span>
+                            </Link>
+                          </Button>
+                          {request.status.toLowerCase() === 'pending' && (
+                            <>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                                onClick={() =>
+                                  handleUpdateStatus(
+                                    request.parentMedicationRequestId,
+                                    'Approved'
+                                  )
+                                }
+                                disabled={updateStatus.isPending}
+                              >
+                                <Icons.check className="h-4 w-4" />
+                                <span className="sr-only">Duyệt</span>
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                onClick={() =>
+                                  handleUpdateStatus(
+                                    request.parentMedicationRequestId,
+                                    'Rejected'
+                                  )
+                                }
+                                disabled={updateStatus.isPending}
+                              >
+                                <Icons.x className="h-4 w-4" />
+                                <span className="sr-only">Từ chối</span>
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-8 text-center">
+                <Icons.inbox className="mb-2 h-10 w-10 text-gray-400" />
+                <h3 className="mb-1 text-lg font-medium">
+                  Không có yêu cầu nào
+                </h3>
+                <p className="text-sm text-gray-500">
+                  Chưa có yêu cầu thuốc nào phù hợp với bộ lọc.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

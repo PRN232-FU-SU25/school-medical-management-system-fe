@@ -45,6 +45,9 @@ const AddMedicationPage = lazy(() => import('@/pages/medications/add'));
 const MedicationRequestsPage = lazy(
   () => import('@/pages/medications/requests')
 );
+const AddMedicationRequestPage = lazy(
+  () => import('@/pages/medications/requests/add')
+);
 
 // Vaccination Management
 const VaccinationsPage = lazy(() => import('@/pages/vaccinations'));
@@ -216,6 +219,10 @@ export default function AppRouter() {
         {
           path: 'medications/requests',
           element: <MedicationRequestsPage />
+        },
+        {
+          path: 'medications/requests/add',
+          element: <AddMedicationRequestPage />
         },
         // Vaccination Management Routes
         {
