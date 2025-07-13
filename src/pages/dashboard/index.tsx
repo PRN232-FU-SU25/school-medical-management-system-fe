@@ -1,4 +1,3 @@
-import BasePages from '@/components/shared/base-pages';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/ui/icons';
@@ -135,13 +134,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <BasePages
-      pageHead="Tổng quan | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Tổng quan', link: '/dashboard' }
-      ]}
-    >
+    <>
       <div className="dashboard h-full w-full">
         {/* Thống kê tổng quan */}
         <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -404,6 +397,6 @@ export default function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </BasePages>
+    </>
   );
 }

@@ -37,21 +37,21 @@ const navItems: NavItem[] = [
     title: 'Hồ sơ sức khỏe',
     href: '/dashboard/student-records',
     icon: 'users',
-    roles: ['Admin', 'MedicalStaff', 'Teacher', 'Parent'],
+    // roles: ['Admin', 'MedicalStaff', 'Teacher', 'Parent'],
     description: 'Quản lý hồ sơ sức khỏe học sinh'
   },
   {
     title: 'Sự kiện y tế',
     href: '/dashboard/medical-events',
     icon: 'activity',
-    roles: ['Admin', 'MedicalStaff'],
+    // roles: ['Admin', 'MedicalStaff'],
     description: 'Quản lý các sự kiện y tế trong trường'
   },
   {
     title: 'Quản lý thuốc',
     href: '/dashboard/medications',
     icon: 'pill',
-    roles: ['Admin', 'MedicalStaff'],
+    // roles: ['Admin', 'MedicalStaff'],
     description: 'Quản lý thuốc và đơn thuốc',
     children: [
       {
@@ -72,7 +72,7 @@ const navItems: NavItem[] = [
     title: 'Tiêm chủng',
     href: '/dashboard/vaccinations',
     icon: 'syringe',
-    roles: ['Admin', 'MedicalStaff'],
+    // roles: ['Admin', 'MedicalStaff'],
     description: 'Quản lý tiêm chủng và chiến dịch',
     children: [
       {
@@ -85,7 +85,7 @@ const navItems: NavItem[] = [
         title: 'Tạo chiến dịch',
         href: '/dashboard/vaccinations/campaign',
         icon: 'calendar',
-        roles: ['Admin', 'MedicalStaff'],
+        // roles: ['Admin', 'MedicalStaff'],
         description: 'Lập kế hoạch chiến dịch tiêm chủng'
       }
     ]
@@ -94,7 +94,7 @@ const navItems: NavItem[] = [
     title: 'Kiểm tra sức khỏe',
     href: '/dashboard/health-checkups',
     icon: 'stethoscope',
-    roles: ['Admin', 'MedicalStaff'],
+    // roles: ['Admin', 'MedicalStaff'],
     description: 'Quản lý kiểm tra sức khỏe định kỳ',
     children: [
       {
@@ -107,7 +107,7 @@ const navItems: NavItem[] = [
         title: 'Tạo đợt kiểm tra',
         href: '/dashboard/health-checkups/campaign',
         icon: 'calendar',
-        roles: ['Admin', 'MedicalStaff'],
+        // roles: ['Admin', 'MedicalStaff'],
         description: 'Lập kế hoạch kiểm tra sức khỏe'
       }
     ]
@@ -116,7 +116,7 @@ const navItems: NavItem[] = [
     title: 'Kho vật tư y tế',
     href: '/dashboard/inventory',
     icon: 'package',
-    roles: ['Admin', 'MedicalStaff'],
+    // roles: ['Admin', 'MedicalStaff'],
     description: 'Quản lý kho vật tư y tế'
   }
 ];
@@ -140,7 +140,7 @@ export default function DashboardLayout({
     <div className="flex min-h-screen flex-col bg-gradient-to-br from-teal-50/30 to-blue-50/30">
       {/* Header */}
       <header className="sticky top-0 z-40 border-b bg-white shadow-sm">
-        <div className="container flex h-16 items-center justify-between py-4">
+        <div className="container flex items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
@@ -157,13 +157,20 @@ export default function DashboardLayout({
                 <MobileNav items={navItems} setOpen={setOpen} />
               </SheetContent>
             </Sheet>
-            <Link to="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-teal-500 to-cyan-600">
-                <Icons.medical className="h-5 w-5 text-white" />
+            <Link to="/" className="flex items-center gap-4">
+              <img
+                src="/images/Logo_THPT_Chu_Van_An.jpg"
+                alt="Logo trường THPT Chu Văn An"
+                className="h-16 w-16 rounded-lg"
+              />
+              <div className="hidden sm:block">
+                <h1 className="text-xl font-bold text-blue-900">
+                  Trường THPT Chu Văn An
+                </h1>
+                <p className="text-sm text-gray-600">
+                  Hệ thống quản lý y tế học đường
+                </p>
               </div>
-              <span className="hidden font-bold text-teal-900 sm:inline-block">
-                Y tế Học đường
-              </span>
             </Link>
           </div>
           <div className="flex items-center gap-2">
@@ -314,11 +321,11 @@ function DesktopNav({ items }: NavProps) {
                 </>
               )}
               <span>{item.title}</span>
-              {item.description && (
+              {/* {item.description && (
                 <span className="ml-auto text-xs text-gray-500">
                   {item.description}
                 </span>
-              )}
+              )} */}
             </Link>
           );
         }
