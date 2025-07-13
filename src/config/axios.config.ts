@@ -18,7 +18,9 @@ const token = helpers.cookie_get('AT');
 // const refreshToken = helpers.cookie_get('RT');
 
 const onRequestSuccess = (config: any) => {
-  config.headers['Authorization'] = `Bearer ${helpers.cookie_get('AT')}`;
+  if (helpers.cookie_get('AT')) {
+    config.headers['Authorization'] = `Bearer ${helpers.cookie_get('AT')}`;
+  }
   return config;
 };
 const onRequestError = (error: any) => {

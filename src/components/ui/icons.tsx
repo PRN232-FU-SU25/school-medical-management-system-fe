@@ -178,7 +178,7 @@ export const Icons = {
   clipboardList: ClipboardList,
   list: List,
   package: Package,
-  calendar: Calendar,
+  calendar2: Calendar,
   users: Users,
   menu: Menu,
   barChart: BarChart,

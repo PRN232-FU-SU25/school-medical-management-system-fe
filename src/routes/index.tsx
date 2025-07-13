@@ -2,12 +2,15 @@ import ScrollToTop from '@/hooks/scroll-to-top';
 import NotFound from '@/pages/not-found';
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
+import LoginRoute from './private/LoginRoute';
+import RoleRoute from './private/RoleRoute';
 const AuthLayout = lazy(() => import('@/components/layout/auth-layout'));
 const PublicLayout = lazy(() => import('@/components/layout/public-layout'));
 const LoginPage = lazy(() => import('@/pages/auth/login'));
+const RegisterPage = lazy(() => import('@/pages/auth/register'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
 const NewPasswordPage = lazy(() => import('@/pages/auth/new-password'));
-
+const OAuth2Page = lazy(() => import('@/pages/auth/oauth2'));
 const DashboardLayout = lazy(
   () => import('@/components/layout/dashboard-layout')
 );
@@ -140,6 +143,14 @@ export default function AppRouter() {
           element: <LoginPage />
         },
         {
+          path: '/register',
+          element: <RegisterPage />
+        },
+        {
+          path: '/auth/oauth2',
+          element: <OAuth2Page />
+        },
+        {
           path: '/forgot-password',
           element: <ForgotPasswordPage />
         },
@@ -153,14 +164,14 @@ export default function AppRouter() {
     {
       path: '/dashboard',
       element: (
-        // <LoginRoute>
-        <DashboardLayout>
-          <Suspense>
-            <ScrollToTop />
-            <Outlet />
-          </Suspense>
-        </DashboardLayout>
-        // </LoginRoute>
+        <LoginRoute>
+          <DashboardLayout>
+            <Suspense>
+              <ScrollToTop />
+              <Outlet />
+            </Suspense>
+          </DashboardLayout>
+        </LoginRoute>
       ),
       children: [
         {
@@ -214,9 +225,9 @@ export default function AppRouter() {
         {
           path: 'vaccinations/campaign',
           element: (
-            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-            <VaccinationCampaignPage />
-            // </RoleRoute>
+            <RoleRoute allowedRoles={['Admin', 'Manager']}>
+              <VaccinationCampaignPage />
+            </RoleRoute>
           )
         },
         {
@@ -231,9 +242,9 @@ export default function AppRouter() {
         {
           path: 'health-checkups/campaign',
           element: (
-            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-            <HealthCheckupCampaignPage />
-            // </RoleRoute>
+            <RoleRoute allowedRoles={['Admin', 'Manager']}>
+              <HealthCheckupCampaignPage />
+            </RoleRoute>
           )
         },
         {
@@ -244,9 +255,9 @@ export default function AppRouter() {
         {
           path: 'inventory',
           element: (
-            // <RoleRoute allowedRoles={['Admin', 'MedicalStaff']}>
-            <InventoryPage />
-            // </RoleRoute>
+            <RoleRoute allowedRoles={['Admin', 'Manager']}>
+              <InventoryPage />
+            </RoleRoute>
           )
         },
         // User Management Routes

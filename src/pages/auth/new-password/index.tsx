@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
 import { useSearchParams } from 'react-router-dom';
-import { useResetPassword } from '@/queries/auth.query';
+// import { useResetPassword } from '@/queries/auth.query';
 import { useRouter } from '@/routes/hooks';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -21,7 +21,7 @@ export default function NewPasswordPage() {
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [searchParams] = useSearchParams();
-  const { mutateAsync: reset } = useResetPassword();
+  // const { mutateAsync: reset } = useResetPassword();
   const [formNewPassword, setFormNewPassword] = useState<FormNewPassword>({
     newPassword: '',
     confirmPassword: ''
@@ -57,20 +57,20 @@ export default function NewPasswordPage() {
       console.log('Mật khẩu hợp lệ, tiếp tục gửi yêu cầu.');
     }
 
-    const data = await reset({
-      ...formNewPassword,
-      userId: userId,
-      token: token
-    });
-    if (data) {
-      router.push('/login');
-      toast({
-        variant: 'success',
-        title: 'Thành công',
-        description: 'Đặt lại mật khẩu thành công.',
-        duration: 3000
-      });
-    }
+    // const data = await reset({
+    //   ...formNewPassword,
+    //   userId: userId,
+    //   token: token
+    // });
+    // if (data) {
+    //   router.push('/login');
+    //   toast({
+    //     variant: 'success',
+    //     title: 'Thành công',
+    //     description: 'Đặt lại mật khẩu thành công.',
+    //     duration: 3000
+    //   });
+    // }
   };
 
   useEffect(() => {

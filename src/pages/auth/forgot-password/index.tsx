@@ -1,119 +1,111 @@
-import BasePages from '@/components/shared/base-pages.js';
-import { Input } from '@/components/ui/input';
-import { useForgotPassword } from '@/queries/auth.query';
-import { useRouter } from '@/routes/hooks';
-import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
 import { Button } from '@/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Icons } from '@/components/ui/icons';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 
-type FormForgotPassword = {
-  email: string;
-};
+const formSchema = z.object({
+  email: z.string().email('Email không hợp lệ')
+});
 
-type FormError = Partial<FormForgotPassword>;
+type ForgotPasswordForm = z.infer<typeof formSchema>;
 
 export default function ForgotPasswordPage() {
   const { toast } = useToast();
-  const { mutateAsync, isPending } = useForgotPassword();
-  const [formForgotPassword, setFormForgotPassword] =
-    useState<FormForgotPassword>({
+
+  const form = useForm<ForgotPasswordForm>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
       email: ''
-    });
-  const [error, setError] = useState<FormError>({});
-  const router = useRouter();
-
-  const validateInputs = (): FormError => {
-    const errors: FormError = {};
-    if (!formForgotPassword.email.trim()) {
-      errors.email = 'Email không được để trống.';
-    } else if (!/\S+@\S+\.\S+/.test(formForgotPassword.email)) {
-      errors.email = 'Email không hợp lệ.';
     }
-    return errors;
-  };
+  });
 
-  const handleForgotPassword = async () => {
-    const errors = validateInputs();
-    setError(errors);
-
-    if (Object.keys(errors).length > 0) {
-      return;
-    }
-
+  const onSubmit = async (values: ForgotPasswordForm) => {
     try {
-      const data = await mutateAsync({
-        email: formForgotPassword.email,
-        clientUri: 'http://localhost:3000/new-password'
+      // TODO: Implement forgot password API
+      toast({
+        title: 'Yêu cầu đã được gửi',
+        description: 'Vui lòng kiểm tra email để đặt lại mật khẩu.',
+        duration: 3000
       });
-      if (data) {
-        console.log('Yêu cầu đặt lại mật khẩu đã được gửi');
-        router.push('/login');
-        toast({
-          variant: 'success',
-          title: 'Thành công',
-          description:
-            'Đã gửi email xác nhận. Vui lòng kiểm tra email của bạn.',
-          duration: 3000
-        });
-      }
-    } catch (err) {
-      setError({ email: 'Có lỗi xảy ra. Vui lòng thử lại.' });
+    } catch (error) {
+      console.error('Forgot password error:', error);
     }
   };
 
   return (
-    <>
-      <BasePages
-        className="relative flex h-full w-full flex-1 items-center justify-center p-4"
-        pageHead="Quên mật khẩu | S-Contract"
-      >
-        <div className="flex w-full items-center justify-center">
-          <div className="mx-auto w-[500px] rounded-xl bg-background p-4">
-            <h1 className="flex justify-center text-center text-3xl">
-              Quên mật khẩu
-            </h1>
-            <p className="mt-3 text-center text-[13px] text-muted-foreground">
-              Nhập email của bạn để lấy lại mật khẩu.
-            </p>
-            <div className="mt-5 space-y-2">
-              <p className="font-medium">Email</p>
-              <Input
-                className="block w-full rounded-md border border-slate-300 bg-white py-1 pl-5 pr-5 shadow-sm placeholder:font-light placeholder:text-slate-300 focus:border-sky-300 focus:outline-none focus:ring-1 focus:ring-sky-500 sm:text-sm"
-                placeholder="Nhập email của bạn"
-                value={formForgotPassword.email}
-                onChange={(e) =>
-                  setFormForgotPassword({
-                    ...formForgotPassword,
-                    email: e.target.value
-                  })
-                }
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-r from-teal-50 to-cyan-50 px-4 py-12 sm:px-6 lg:px-8">
+      <Card className="w-full max-w-md border-none shadow-lg">
+        <CardHeader className="space-y-2 text-center">
+          <CardTitle className="text-2xl font-semibold tracking-tight text-teal-900">
+            Quên mật khẩu
+          </CardTitle>
+          <CardDescription>
+            Nhập email của bạn để nhận liên kết đặt lại mật khẩu
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="example@school.edu.vn"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {error.email && (
-                <p className="mt-1 text-xs text-red-500">{error.email}</p>
-              )}
 
-              <div className="flex flex-col items-center gap-4">
-                <Button
-                  className="bg-yellow w-full bg-primary text-white"
-                  onClick={handleForgotPassword}
-                  disabled={isPending}
-                >
-                  {isPending ? 'Đang xử lý...' : 'Gửi xác nhận'}
-                </Button>
-              </div>
+              <Button
+                type="submit"
+                className="w-full bg-teal-600 hover:bg-teal-700"
+                disabled={form.formState.isSubmitting}
+              >
+                {form.formState.isSubmitting && (
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Gửi yêu cầu
+              </Button>
 
-              <p className="mt-5 text-center">
-                <a
-                  onClick={() => router.push('/login')}
-                  className="cursor-pointer text-[13px] underline"
+              <div className="text-center text-sm text-gray-600">
+                <Link
+                  to="/auth/login"
+                  className="font-medium text-teal-600 hover:text-teal-500"
                 >
                   Quay lại đăng nhập
-                </a>
-              </p>
-            </div>
-          </div>
-        </div>
-      </BasePages>
-    </>
+                </Link>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

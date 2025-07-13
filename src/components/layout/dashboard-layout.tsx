@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,8 +14,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Icons } from '@/components/ui/icons';
 import { RootState } from '@/redux/store';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { cn } from '@/lib/utils';
+import __helpers from '@/helpers';
+import { logout, setUserInfo, setRole, login } from '@/redux/auth.slice';
+import { useGetProfile } from '@/queries/auth.query';
 
 interface NavItem {
   title: string;
@@ -130,9 +133,23 @@ export default function DashboardLayout({
   const location = useLocation();
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch();
+  const { data: profileData, isSuccess } = useGetProfile();
+
+  useEffect(() => {
+    if (isSuccess && profileData) {
+      dispatch(setUserInfo(profileData));
+      dispatch(setRole(profileData.role));
+      dispatch(login());
+    }
+  }, [isSuccess, profileData, dispatch]);
 
   const handleLogout = () => {
     // Xử lý đăng xuất
+    __helpers.cookie_delete('AT');
+    __helpers.cookie_delete('RT');
+    __helpers.cookie_delete('R');
+    dispatch(logout());
     navigate('/login');
   };
 
@@ -192,13 +209,17 @@ export default function DashboardLayout({
                   className="relative h-10 w-10 rounded-full hover:bg-teal-50"
                 >
                   <Avatar className="h-9 w-9 border-2 border-teal-200">
-                    <AvatarImage
-                      src="/images/avatar.png"
-                      alt={auth?.userInfo?.fullName || 'User'}
-                    />
-                    <AvatarFallback className="bg-teal-100 text-teal-900">
-                      {auth?.userInfo?.fullName?.charAt(0) || 'U'}
-                    </AvatarFallback>
+                    {auth?.userInfo?.accountInfo.avatar ? (
+                      <img
+                        src={auth?.userInfo?.accountInfo.avatar}
+                        alt={auth?.userInfo?.accountInfo.fullName || 'User'}
+                        className="h-9 w-9 rounded-full"
+                      />
+                    ) : (
+                      <AvatarFallback className="bg-teal-100 text-teal-900">
+                        {auth?.userInfo?.accountInfo.fullName?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    )}
                   </Avatar>
                 </Button>
               </DropdownMenuTrigger>
@@ -206,7 +227,7 @@ export default function DashboardLayout({
                 <DropdownMenuLabel>
                   <div className="flex flex-col space-y-1">
                     <p className="text-sm font-medium leading-none">
-                      {auth?.userInfo?.fullName || 'User'}
+                      {auth?.userInfo?.accountInfo.fullName || 'User'}
                     </p>
                     <p className="text-xs leading-none text-gray-500">
                       {auth?.userInfo?.email || 'user@example.com'}
