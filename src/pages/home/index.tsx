@@ -15,13 +15,6 @@ export default function HomePage() {
     <>
       <Helmet>
         <title>Trường THPT Chu Văn An | Hệ thống quản lý y tế học đường</title>
-        <style>
-          {`
-            html {
-              scroll-behavior: smooth;
-            }
-          `}
-        </style>
       </Helmet>
 
       {/* Hero Section */}

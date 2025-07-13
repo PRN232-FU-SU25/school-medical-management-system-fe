@@ -3,6 +3,7 @@ import NotFound from '@/pages/not-found';
 import { Suspense, lazy } from 'react';
 import { Navigate, Outlet, useRoutes } from 'react-router-dom';
 const AuthLayout = lazy(() => import('@/components/layout/auth-layout'));
+const PublicLayout = lazy(() => import('@/components/layout/public-layout'));
 const LoginPage = lazy(() => import('@/pages/auth/login'));
 const ForgotPasswordPage = lazy(() => import('@/pages/auth/forgot-password'));
 const NewPasswordPage = lazy(() => import('@/pages/auth/new-password'));
@@ -15,7 +16,6 @@ const DashboardLayout = lazy(
 const HomePage = lazy(() => import('@/pages/home'));
 const BlogPage = lazy(() => import('@/pages/blog'));
 const BlogDetailPage = lazy(() => import('@/pages/blog/detail'));
-const ResourcesPage = lazy(() => import('@/pages/resources'));
 const GuidelinesPage = lazy(() => import('@/pages/resources/guidelines'));
 const FormsPage = lazy(() => import('@/pages/resources/forms'));
 const LibraryPage = lazy(() => import('@/pages/resources/library'));
@@ -65,11 +65,6 @@ const InventoryPage = lazy(() => import('@/pages/inventory'));
 // User Management
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const NotificationPage = lazy(() => import('@/pages/notifications'));
-
-// Other Pages
-const PrivacyPage = lazy(() => import('@/pages/other/privacy'));
-const TermsPage = lazy(() => import('@/pages/other/terms'));
-
 // ----------------------------------------------------------------------
 
 export default function AppRouter() {
@@ -87,7 +82,21 @@ export default function AppRouter() {
         {
           element: <HomePage />,
           index: true
-        },
+        }
+      ]
+    },
+    // Public Routes
+    {
+      path: '/',
+      element: (
+        <PublicLayout>
+          <Suspense>
+            <ScrollToTop />
+            <Outlet />
+          </Suspense>
+        </PublicLayout>
+      ),
+      children: [
         {
           path: '/blog',
           element: <BlogPage />
@@ -95,10 +104,6 @@ export default function AppRouter() {
         {
           path: '/blog/:id',
           element: <BlogDetailPage />
-        },
-        {
-          path: '/resources',
-          element: <ResourcesPage />
         },
         {
           path: '/resources/guidelines',
@@ -115,14 +120,6 @@ export default function AppRouter() {
         {
           path: '/resources/policies',
           element: <PoliciesPage />
-        },
-        {
-          path: '/privacy',
-          element: <PrivacyPage />
-        },
-        {
-          path: '/terms',
-          element: <TermsPage />
         }
       ]
     },
