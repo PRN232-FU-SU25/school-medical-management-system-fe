@@ -8,93 +8,54 @@ import {
   SelectValue
 } from '@/components/ui/select';
 import { Icons } from '@/components/ui/icons';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useGetHealthRecords } from '@/queries/health-records.query';
+import { Skeleton } from '@/components/ui/skeleton';
 
-// Dữ liệu mẫu cho danh sách học sinh
-const studentsData = [
-  {
-    id: 1,
-    name: 'Nguyễn Văn A',
-    class: '10A1',
-    dateOfBirth: '15/05/2008',
-    gender: 'Nam',
-    allergies: 'Hải sản',
-    chronicDiseases: 'Không',
-    status: 'Bình thường'
-  },
-  {
-    id: 2,
-    name: 'Trần Thị B',
-    class: '10A2',
-    dateOfBirth: '22/08/2008',
-    gender: 'Nữ',
-    allergies: 'Không',
-    chronicDiseases: 'Hen suyễn',
-    status: 'Cần theo dõi'
-  },
-  {
-    id: 3,
-    name: 'Lê Văn C',
-    class: '11B1',
-    dateOfBirth: '10/03/2007',
-    gender: 'Nam',
-    allergies: 'Không',
-    chronicDiseases: 'Không',
-    status: 'Bình thường'
-  },
-  {
-    id: 4,
-    name: 'Phạm Thị D',
-    class: '11B2',
-    dateOfBirth: '05/11/2007',
-    gender: 'Nữ',
-    allergies: 'Phấn hoa',
-    chronicDiseases: 'Không',
-    status: 'Bình thường'
-  },
-  {
-    id: 5,
-    name: 'Hoàng Văn E',
-    class: '12C1',
-    dateOfBirth: '18/12/2006',
-    gender: 'Nam',
-    allergies: 'Không',
-    chronicDiseases: 'Tiểu đường',
-    status: 'Cần theo dõi'
-  }
-];
+interface HealthRecord {
+  id: number;
+  studentName: string;
+  class: string;
+  dateOfBirth: string;
+  gender: string;
+  allergies: string;
+  chronicDiseases: string;
+  status: string;
+}
 
 // Định nghĩa cột cho bảng
 const columns = [
   {
-    accessorKey: 'name',
+    accessorKey: 'studentName',
     header: 'Họ tên',
-    cell: ({ row }: any) => (
-      <div className="font-medium text-teal-900">{row.getValue('name')}</div>
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
+      <div className="font-medium text-teal-900">
+        {row.getValue('studentName')}
+      </div>
     )
   },
   {
     accessorKey: 'class',
     header: 'Lớp',
-    cell: ({ row }: any) => (
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <div className="text-gray-600">{row.getValue('class')}</div>
     )
   },
   {
     accessorKey: 'dateOfBirth',
     header: 'Ngày sinh',
-    cell: ({ row }: any) => (
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <div className="text-gray-600">{row.getValue('dateOfBirth')}</div>
     )
   },
   {
     accessorKey: 'gender',
     header: 'Giới tính',
-    cell: ({ row }: any) => (
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
         {row.getValue('gender')}
       </span>
@@ -103,7 +64,7 @@ const columns = [
   {
     accessorKey: 'allergies',
     header: 'Dị ứng',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const allergies = row.getValue('allergies');
       return allergies === 'Không' ? (
         <div className="text-gray-600">Không</div>
@@ -115,7 +76,7 @@ const columns = [
   {
     accessorKey: 'chronicDiseases',
     header: 'Bệnh mãn tính',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const diseases = row.getValue('chronicDiseases');
       return diseases === 'Không' ? (
         <div className="text-gray-600">Không</div>
@@ -127,19 +88,19 @@ const columns = [
   {
     accessorKey: 'status',
     header: 'Trạng thái',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { getValue: (key: string) => string } }) => {
       const status = row.getValue('status');
       const statusConfig = {
-        'Bình thường': { variant: 'success' },
-        'Cần theo dõi': { variant: 'warning' }
-      } as const;
+        'Bình thường': { variant: 'success' as const },
+        'Cần theo dõi': { variant: 'warning' as const }
+      };
       const config = statusConfig[status as keyof typeof statusConfig];
       return <Badge variant={config.variant}>{status}</Badge>;
     }
   },
   {
     id: 'actions',
-    cell: ({ row }: any) => {
+    cell: ({ row }: { row: { original: HealthRecord } }) => {
       const student = row.original;
       return (
         <div className="flex justify-end gap-2">
@@ -166,10 +127,24 @@ export default function StudentRecordsPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined
   );
+  const [searchParams] = useSearchParams();
+
+  // Get page and limit from URL
+  const page = searchParams?.get('page') ?? '1';
+  const limit = searchParams?.get('limit') ?? '10';
+  const pageNumber = Number(page);
+  const pageSize = Number(limit);
+
+  const { data: healthRecordsData, isLoading } = useGetHealthRecords(
+    pageNumber,
+    pageSize
+  );
 
   // Lọc dữ liệu học sinh dựa trên các bộ lọc
-  const filteredStudents = studentsData.filter((student) => {
-    const matchesSearch = student.name
+  const filteredStudents = (
+    (healthRecordsData?.data?.items as HealthRecord[]) || []
+  ).filter((student) => {
+    const matchesSearch = student.studentName
       .toLowerCase()
       .includes(searchQuery.toLowerCase());
     const matchesClass =
@@ -183,13 +158,45 @@ export default function StudentRecordsPage() {
 
   // Danh sách lớp học duy nhất
   const uniqueClasses = Array.from(
-    new Set(studentsData.map((student) => student.class))
+    new Set(
+      ((healthRecordsData?.data?.items as HealthRecord[]) || []).map(
+        (student) => student.class
+      )
+    )
   );
 
   // Danh sách trạng thái duy nhất
   const uniqueStatuses = Array.from(
-    new Set(studentsData.map((student) => student.status))
+    new Set(
+      ((healthRecordsData?.data?.items as HealthRecord[]) || []).map(
+        (student) => student.status
+      )
+    )
   );
+
+  if (isLoading) {
+    return (
+      <Card className="border-none shadow-md">
+        <CardHeader className="border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-2">
+          <Skeleton className="h-8 w-[200px]" />
+        </CardHeader>
+        <CardContent className="pt-6">
+          <div className="space-y-4">
+            <div className="flex gap-4">
+              <Skeleton className="h-10 w-[250px]" />
+              <Skeleton className="h-10 w-[150px]" />
+              <Skeleton className="h-10 w-[150px]" />
+            </div>
+            <div className="space-y-2">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <Skeleton key={i} className="h-16 w-full" />
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <>
@@ -252,7 +259,7 @@ export default function StudentRecordsPage() {
               <DataTable
                 columns={columns}
                 data={filteredStudents}
-                pageCount={1}
+                pageCount={healthRecordsData?.data?.totalPages || 1}
               />
             </div>
           </div>
