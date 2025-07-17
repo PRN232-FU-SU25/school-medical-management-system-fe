@@ -30,6 +30,9 @@ const DashboardPage = lazy(() => import('@/pages/dashboard'));
 // Student Health Records
 const StudentRecordsPage = lazy(() => import('@/pages/student-records'));
 const StudentDetailPage = lazy(() => import('@/pages/student-records/detail'));
+const EditStudentRecordPage = lazy(
+  () => import('@/pages/student-records/edit')
+);
 const AddStudentRecordPage = lazy(() => import('@/pages/student-records/add'));
 
 // Medical Events
@@ -42,11 +45,15 @@ const MedicalEventDetailPage = lazy(
 // Medication Management
 const MedicationsPage = lazy(() => import('@/pages/medications'));
 const AddMedicationPage = lazy(() => import('@/pages/medications/add'));
+const EditMedicalSupplyPage = lazy(() => import('@/pages/medications/edit'));
 const MedicationRequestsPage = lazy(
   () => import('@/pages/medications/requests')
 );
 const AddMedicationRequestPage = lazy(
   () => import('@/pages/medications/requests/add')
+);
+const MedicationRequestDetailPage = lazy(
+  () => import('@/pages/medications/requests/detail')
 );
 
 // Vaccination Management
@@ -64,9 +71,6 @@ const HealthCheckupCampaignPage = lazy(
 const HealthCheckupDetailPage = lazy(
   () => import('@/pages/health-checkups/detail')
 );
-
-// Inventory Management
-const InventoryPage = lazy(() => import('@/pages/inventory'));
 
 // User Management
 const ProfilePage = lazy(() => import('@/pages/profile'));
@@ -194,6 +198,10 @@ export default function AppRouter() {
           path: 'student-records/:id',
           element: <StudentDetailPage />
         },
+        {
+          path: 'student-records/:id/edit',
+          element: <EditStudentRecordPage />
+        },
         // Medical Events Routes
         {
           path: 'medical-events',
@@ -210,60 +218,91 @@ export default function AppRouter() {
         // Medication Management Routes
         {
           path: 'medications',
-          element: <MedicationsPage />
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <MedicationsPage />
+            </RoleRoute>
+          )
         },
         {
           path: 'medications/add',
-          element: <AddMedicationPage />
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <AddMedicationPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'medications/edit/:id',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <EditMedicalSupplyPage />
+            </RoleRoute>
+          )
         },
         {
           path: 'medications/requests',
           element: <MedicationRequestsPage />
         },
         {
+          path: 'medications/requests/:id',
+          element: <MedicationRequestDetailPage />
+        },
+        {
           path: 'medications/requests/add',
-          element: <AddMedicationRequestPage />
+          element: (
+            <RoleRoute allowedRoles={['Parent']}>
+              <AddMedicationRequestPage />
+            </RoleRoute>
+          )
         },
         // Vaccination Management Routes
         {
           path: 'vaccinations',
-          element: <VaccinationsPage />
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationsPage />
+            </RoleRoute>
+          )
         },
         {
           path: 'vaccinations/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'Manager']}>
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
               <VaccinationCampaignPage />
             </RoleRoute>
           )
         },
         {
           path: 'vaccinations/:id',
-          element: <VaccinationDetailPage />
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationDetailPage />
+            </RoleRoute>
+          )
         },
         // Health Checkups Routes
         {
           path: 'health-checkups',
-          element: <HealthCheckupsPage />
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <HealthCheckupsPage />
+            </RoleRoute>
+          )
         },
         {
           path: 'health-checkups/campaign',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'Manager']}>
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
               <HealthCheckupCampaignPage />
             </RoleRoute>
           )
         },
         {
           path: 'health-checkups/:id',
-          element: <HealthCheckupDetailPage />
-        },
-        // Inventory Management Routes
-        {
-          path: 'inventory',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'Manager']}>
-              <InventoryPage />
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <HealthCheckupDetailPage />
             </RoleRoute>
           )
         },

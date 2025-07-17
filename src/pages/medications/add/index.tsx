@@ -47,8 +47,7 @@ export default function AddMedicalSupplyPage() {
     status: 'Available',
     instructions: '',
     description: '',
-    expiryDate: undefined,
-    startedDate: new Date().toISOString().split('T')[0]
+    expiryDate: undefined
   });
 
   const handleChange = (
@@ -216,7 +215,11 @@ export default function AddMedicalSupplyPage() {
                 id="expiryDate"
                 name="expiryDate"
                 type="date"
-                value={formData.expiryDate || ''}
+                value={
+                  formData.expiryDate
+                    ? new Date(formData.expiryDate).toISOString().split('T')[0]
+                    : ''
+                }
                 onChange={handleChange}
               />
             </div>

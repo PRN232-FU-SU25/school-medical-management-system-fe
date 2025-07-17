@@ -12,6 +12,17 @@ export default function MedicalEventDetailPage() {
   const { data: medicalEvent, isLoading } =
     useGetMedicalEventById(medicalEventId);
 
+  const evenTypeMap = {
+    Accident: 'Tai nạn',
+    Fall: 'Té ngã',
+    Fever: 'Sốt',
+    Illness: 'Bệnh khác',
+    InfectiousDisease: 'Dịch bệnh',
+    Injury: 'Chấn thương',
+    MedicationGiven: 'Đã cho dùng thuốc',
+    Other: 'Khác'
+  };
+
   if (isLoading) {
     return (
       <Card className="border-none shadow-md">
@@ -58,7 +69,11 @@ export default function MedicalEventDetailPage() {
                 Loại sự kiện
               </h3>
               <p className="text-base font-semibold text-teal-900">
-                {medicalEvent?.eventType}
+                {
+                  evenTypeMap[
+                    medicalEvent?.eventType as keyof typeof evenTypeMap
+                  ]
+                }
               </p>
             </div>
 

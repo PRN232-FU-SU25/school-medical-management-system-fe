@@ -91,12 +91,14 @@ import {
   FileBarChart,
   ClipboardX,
   Clock,
-  Inbox
+  Inbox,
+  XCircle
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  xCircle: XCircle,
   x: X,
   inbox: Inbox,
   clock: Clock,

@@ -1,26 +1,23 @@
-import BasePages from '@/components/shared/base-pages';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/ui/icons';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store';
 
 export default function ProfilePage() {
   const auth = useSelector((state: RootState) => state.auth);
+  const roleMap = {
+    Parent: 'Phụ huynh',
+    SchoolNurse: 'Nhân viên y tế',
+    Admin: 'Quản trị viên'
+  };
 
   return (
-    <BasePages
-      pageHead="Hồ sơ cá nhân | Hệ thống quản lý y tế học đường"
-      breadcrumbs={[
-        { title: 'Trang chủ', link: '/' },
-        { title: 'Dashboard', link: '/dashboard' },
-        { title: 'Hồ sơ cá nhân', link: '/dashboard/profile' }
-      ]}
-    >
+    <>
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -30,8 +27,17 @@ export default function ProfilePage() {
             <div className="flex flex-col items-center gap-4 md:flex-row">
               <div className="relative">
                 <Avatar className="h-24 w-24">
-                  <AvatarImage src="/images/avatar.png" alt={auth?.fullName} />
-                  <AvatarFallback>{auth?.fullName?.charAt(0)}</AvatarFallback>
+                  {auth?.userInfo?.accountInfo.avatar ? (
+                    <img
+                      src={auth?.userInfo?.accountInfo.avatar}
+                      alt={auth?.userInfo?.accountInfo.fullName || 'User'}
+                      className="h-24 w-24 rounded-full"
+                    />
+                  ) : (
+                    <AvatarFallback className="bg-teal-100 text-2xl text-teal-900">
+                      {auth?.userInfo?.accountInfo.fullName?.charAt(0) || 'U'}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <Button
                   variant="outline"
@@ -44,14 +50,15 @@ export default function ProfilePage() {
               </div>
               <div className="flex-1 space-y-1 text-center md:text-left">
                 <h3 className="text-2xl font-bold">
-                  {auth?.fullName || 'Người dùng'}
+                  {auth?.userInfo?.accountInfo?.fullName || 'Người dùng'}
                 </h3>
                 <p className="text-sm text-gray-500">
-                  {auth?.email || 'user@example.com'}
+                  {auth?.userInfo?.email || 'user@example.com'}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Vai trò:{' '}
-                  <span className="font-medium">{auth?.role || 'User'}</span>
+                  <span className="font-medium">
+                    {roleMap[auth?.userInfo?.role as keyof typeof roleMap]}
+                  </span>
                 </p>
               </div>
             </div>
@@ -77,7 +84,7 @@ export default function ProfilePage() {
                     <Input
                       id="fullName"
                       placeholder="Nhập họ và tên"
-                      defaultValue={auth?.fullName}
+                      defaultValue={auth?.userInfo?.accountInfo?.fullName}
                     />
                   </div>
                   <div className="space-y-2">
@@ -85,8 +92,9 @@ export default function ProfilePage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="Nhập email"
-                      defaultValue={auth?.email}
+                      defaultValue={auth?.userInfo?.email}
+                      disabled
+                      className="bg-gray-50"
                     />
                   </div>
                   <div className="space-y-2">
@@ -95,14 +103,16 @@ export default function ProfilePage() {
                       id="phone"
                       type="tel"
                       placeholder="Nhập số điện thoại"
-                      defaultValue={auth?.phone}
+                      defaultValue={auth?.userInfo?.accountInfo?.phone}
                     />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="role">Vai trò</Label>
                     <Input
                       id="role"
-                      defaultValue={auth?.role}
+                      defaultValue={
+                        roleMap[auth?.userInfo?.role as keyof typeof roleMap]
+                      }
                       disabled
                       className="bg-gray-50"
                     />
@@ -187,6 +197,6 @@ export default function ProfilePage() {
           </TabsContent>
         </Tabs>
       </div>
-    </BasePages>
+    </>
   );
 }

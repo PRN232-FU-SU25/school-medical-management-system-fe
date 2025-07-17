@@ -1,6 +1,5 @@
-import { RootState } from '@/redux/store';
-import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
+import __helpers from '@/helpers';
 
 interface RoleRouteProps {
   allowedRoles: string[];
@@ -8,8 +7,7 @@ interface RoleRouteProps {
 }
 
 const RoleRoute = ({ allowedRoles, children }: RoleRouteProps) => {
-  const auth = useSelector((state: RootState) => state.auth);
-  const userRole = auth.role;
+  const userRole = __helpers.cookie_get('R');
 
   if (!userRole || !allowedRoles.includes(userRole)) {
     return <Navigate to="/404" replace />;

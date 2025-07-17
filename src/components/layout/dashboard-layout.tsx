@@ -34,61 +34,72 @@ const navItems: NavItem[] = [
     title: 'Tổng quan',
     href: '/dashboard',
     icon: 'dashboard',
+    roles: ['Admin', 'SchoolNurse'],
     description: 'Thống kê và báo cáo tổng quan'
   },
   {
     title: 'Hồ sơ sức khỏe',
     href: '/dashboard/student-records',
     icon: 'users',
-    // roles: ['Admin', 'MedicalStaff', 'Teacher', 'Parent'],
+    roles: ['Admin', 'SchoolNurse', 'Parent'],
     description: 'Quản lý hồ sơ sức khỏe học sinh'
   },
   {
     title: 'Sự kiện y tế',
     href: '/dashboard/medical-events',
     icon: 'activity',
-    // roles: ['Admin', 'MedicalStaff'],
+    roles: ['Admin', 'SchoolNurse', 'Parent'],
     description: 'Quản lý các sự kiện y tế trong trường'
   },
   {
     title: 'Quản lý thuốc',
     href: '/dashboard/medications',
     icon: 'pill',
-    // roles: ['Admin', 'MedicalStaff'],
+    roles: ['Admin', 'SchoolNurse'],
     description: 'Quản lý thuốc và đơn thuốc',
     children: [
       {
         title: 'Danh sách thuốc',
         href: '/dashboard/medications',
         icon: 'list',
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Xem và quản lý kho thuốc'
       },
       {
         title: 'Yêu cầu thuốc',
         href: '/dashboard/medications/requests',
         icon: 'clipboardList',
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Xử lý yêu cầu cấp phát thuốc'
       }
     ]
   },
   {
+    title: 'Gửi thuốc',
+    href: '/dashboard/medications/requests',
+    icon: 'pill',
+    roles: ['Parent'],
+    description: 'Gửi thuốc cho học sinh'
+  },
+  {
     title: 'Tiêm chủng',
     href: '/dashboard/vaccinations',
     icon: 'syringe',
-    // roles: ['Admin', 'MedicalStaff'],
+    roles: ['Admin', 'SchoolNurse'],
     description: 'Quản lý tiêm chủng và chiến dịch',
     children: [
       {
         title: 'Danh sách tiêm chủng',
         href: '/dashboard/vaccinations',
         icon: 'list',
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Xem lịch sử và kế hoạch tiêm chủng'
       },
       {
         title: 'Tạo chiến dịch',
         href: '/dashboard/vaccinations/campaign',
         icon: 'calendar',
-        // roles: ['Admin', 'MedicalStaff'],
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Lập kế hoạch chiến dịch tiêm chủng'
       }
     ]
@@ -97,30 +108,24 @@ const navItems: NavItem[] = [
     title: 'Kiểm tra sức khỏe',
     href: '/dashboard/health-checkups',
     icon: 'stethoscope',
-    // roles: ['Admin', 'MedicalStaff'],
+    roles: ['Admin', 'SchoolNurse'],
     description: 'Quản lý kiểm tra sức khỏe định kỳ',
     children: [
       {
         title: 'Danh sách kiểm tra',
         href: '/dashboard/health-checkups',
         icon: 'list',
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Xem lịch sử kiểm tra sức khỏe'
       },
       {
         title: 'Tạo đợt kiểm tra',
         href: '/dashboard/health-checkups/campaign',
         icon: 'calendar',
-        // roles: ['Admin', 'MedicalStaff'],
+        roles: ['Admin', 'SchoolNurse'],
         description: 'Lập kế hoạch kiểm tra sức khỏe'
       }
     ]
-  },
-  {
-    title: 'Kho vật tư y tế',
-    href: '/dashboard/inventory',
-    icon: 'package',
-    // roles: ['Admin', 'MedicalStaff'],
-    description: 'Quản lý kho vật tư y tế'
   }
 ];
 

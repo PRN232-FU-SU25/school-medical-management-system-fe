@@ -78,6 +78,14 @@ const BaseRequest = {
       console.log('err', err);
     }
   },
+  Patch: async (url: string, data?: any) => {
+    try {
+      const response = await axios.patch<any>(url, data);
+      return response.data;
+    } catch (err) {
+      console.log('err', err);
+    }
+  },
   PostWithoutCatch: async (url: string, data?: any) => {
     const response = await axios.post<any>(url, data);
     return response.data;

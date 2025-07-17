@@ -15,6 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useGetHealthRecords } from '@/queries/health-records.query';
 import { Skeleton } from '@/components/ui/skeleton';
+import * as XLSX from 'xlsx';
 
 interface HealthRecord {
   healthRecordId: number;
@@ -200,12 +201,70 @@ export default function StudentRecordsPage() {
           <CardTitle className="text-teal-900">
             Hồ sơ sức khỏe học sinh
           </CardTitle>
-          <Button asChild className="bg-teal-600 hover:bg-teal-700">
-            <Link to="/dashboard/student-records/add">
-              <Icons.plus className="mr-2 h-4 w-4" />
-              Thêm hồ sơ mới
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="border-teal-600 text-teal-600 hover:bg-teal-50"
+              onClick={() => {
+                // Prepare data for Excel
+                const excelData = filteredStudents.map((record) => ({
+                  'Họ tên': record.student.fullName,
+                  Lớp: record.student.className,
+                  'Ngày sinh': record.student.dob.split('T')[0],
+                  'Giới tính': record.student.gender,
+                  'Dị ứng': record.allergies,
+                  'Bệnh mãn tính': record.chronicDiseases,
+                  'Tiền sử điều trị': record.pastTreatments,
+                  'Thị lực': record.vision,
+                  'Thính lực': record.hearing,
+                  'Tiêm chủng': record.vaccinations,
+                  'Ngày tạo': record.createdAt.split('T')[0],
+                  'Ngày cập nhật': record.updatedAt
+                    ? record.updatedAt.split('T')[0]
+                    : ''
+                }));
+
+                // Create workbook and worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // Set column widths
+                const columnWidths = [
+                  { wch: 25 }, // Họ tên
+                  { wch: 10 }, // Lớp
+                  { wch: 12 }, // Ngày sinh
+                  { wch: 10 }, // Giới tính
+                  { wch: 20 }, // Dị ứng
+                  { wch: 20 }, // Bệnh mãn tính
+                  { wch: 20 }, // Tiền sử điều trị
+                  { wch: 15 }, // Thị lực
+                  { wch: 15 }, // Thính lực
+                  { wch: 20 }, // Tiêm chủng
+                  { wch: 12 }, // Ngày tạo
+                  { wch: 12 } // Ngày cập nhật
+                ];
+                ws['!cols'] = columnWidths;
+
+                // Add the worksheet to the workbook
+                XLSX.utils.book_append_sheet(wb, ws, 'Hồ sơ sức khỏe');
+
+                // Generate Excel file
+                XLSX.writeFile(
+                  wb,
+                  `ho-so-suc-khoe-${new Date().toISOString().split('T')[0]}.xlsx`
+                );
+              }}
+            >
+              <Icons.download className="mr-2 h-4 w-4" />
+              Xuất Excel
+            </Button>
+            <Button asChild className="bg-teal-600 hover:bg-teal-700">
+              <Link to="/dashboard/student-records/add">
+                <Icons.plus className="mr-2 h-4 w-4" />
+                Thêm hồ sơ mới
+              </Link>
+            </Button>
+          </div>
         </CardHeader>
 
         <CardContent className="pt-6">

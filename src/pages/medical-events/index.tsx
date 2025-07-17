@@ -12,12 +12,23 @@ import { Link, useSearchParams } from 'react-router-dom';
 import DataTable from '@/components/shared/data-table';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   MedicalEventResponse,
   useGetMedicalEvents
 } from '@/queries/medical-events.query';
+import * as XLSX from 'xlsx';
+
+const evenTypeMap = {
+  Accident: 'Tai nạn',
+  Fall: 'Té ngã',
+  Fever: 'Sốt',
+  Illness: 'Bệnh khác',
+  InfectiousDisease: 'Dịch bệnh',
+  Injury: 'Chấn thương',
+  MedicationGiven: 'Đã cho dùng thuốc',
+  Other: 'Khác'
+};
 
 // Định nghĩa cột cho bảng
 const columns = [
@@ -35,7 +46,7 @@ const columns = [
     header: 'Loại sự kiện',
     cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
-        {row.getValue('eventType')}
+        {evenTypeMap[row.getValue('eventType') as keyof typeof evenTypeMap]}
       </span>
     )
   },
@@ -157,11 +168,54 @@ export default function MedicalEventsPage() {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
           <CardTitle className="text-teal-900">Sự kiện y tế</CardTitle>
           <div className="flex gap-2">
-            <Button asChild variant="outline" className="gap-2">
-              <Link to="/dashboard/medical-events/reports">
-                <Icons.fileBarChart className="h-4 w-4" />
-                Báo cáo
-              </Link>
+            <Button
+              variant="outline"
+              className="border-teal-600 text-teal-600 hover:bg-teal-50"
+              onClick={() => {
+                // Prepare data for Excel
+                const excelData = filteredEvents.map((event) => ({
+                  'Học sinh': event.studentFullName,
+                  'Loại sự kiện':
+                    evenTypeMap[event.eventType as keyof typeof evenTypeMap],
+                  Ngày: new Date(event.date).toLocaleDateString('vi-VN'),
+                  'Mô tả': event.description || 'Không có mô tả',
+                  'Người xử lý': event.nurseFullName,
+                  'Ngày tạo': new Date(event.createAt).toLocaleDateString(
+                    'vi-VN'
+                  )
+                }));
+
+                // Create workbook and worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // Set column widths
+                const columnWidths = [
+                  { wch: 25 }, // Học sinh
+                  { wch: 15 }, // Loại sự kiện
+                  { wch: 12 }, // Ngày
+                  { wch: 30 }, // Mô tả
+                  { wch: 20 }, // Người xử lý
+                  { wch: 25 }, // Triệu chứng
+                  { wch: 25 }, // Cách xử lý
+                  { wch: 25 }, // Ghi chú
+                  { wch: 12 }, // Ngày tạo
+                  { wch: 12 } // Ngày cập nhật
+                ];
+                ws['!cols'] = columnWidths;
+
+                // Add the worksheet to the workbook
+                XLSX.utils.book_append_sheet(wb, ws, 'Sự kiện y tế');
+
+                // Generate Excel file
+                XLSX.writeFile(
+                  wb,
+                  `su-kien-y-te-${new Date().toISOString().split('T')[0]}.xlsx`
+                );
+              }}
+            >
+              <Icons.download className="mr-2 h-4 w-4" />
+              Xuất Excel
             </Button>
             <Button asChild className="bg-teal-600 hover:bg-teal-700">
               <Link to="/dashboard/medical-events/add">
@@ -196,7 +250,7 @@ export default function MedicalEventsPage() {
                   <SelectItem value="all">Tất cả loại sự kiện</SelectItem>
                   {uniqueEventTypes.map((type, index) => (
                     <SelectItem key={index} value={type}>
-                      {type}
+                      {evenTypeMap[type as keyof typeof evenTypeMap]}
                     </SelectItem>
                   ))}
                 </SelectContent>

@@ -33,6 +33,12 @@ export default function HealthRecordDetailPage() {
   console.log('id after Number conversion:', Number(id));
   const { data: healthRecord, isLoading } = useGetHealthRecordById(Number(id));
 
+  const genderMap = {
+    Male: 'Nam',
+    Female: 'Nữ',
+    Other: 'Khác'
+  };
+
   if (isLoading) {
     return (
       <Card className="border-none shadow-md">
@@ -86,7 +92,7 @@ export default function HealthRecordDetailPage() {
           </Button>
           <Button
             className="bg-teal-600 hover:bg-teal-700"
-            onClick={() => navigate(`/dashboard/student-records/add`)}
+            onClick={() => navigate(`/dashboard/student-records/${id}/edit`)}
           >
             <Icons.pencil className="mr-2 h-4 w-4" />
             Chỉnh sửa
@@ -104,7 +110,12 @@ export default function HealthRecordDetailPage() {
               'vi-VN'
             )}
           />
-          <InfoRow label="Giới tính" value={healthRecord.student.gender} />
+          <InfoRow
+            label="Giới tính"
+            value={
+              genderMap[healthRecord.student.gender as keyof typeof genderMap]
+            }
+          />
           <InfoRow
             label="Dị ứng"
             value={healthRecord.allergies}

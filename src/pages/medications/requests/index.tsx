@@ -27,6 +27,10 @@ import {
   useGetMedicationRequests,
   useUpdateMedicationRequestStatus
 } from '@/queries/medication-requests.query';
+import __helpers from '@/helpers';
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
+import * as XLSX from 'xlsx';
 
 export default function MedicationRequestsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -39,6 +43,7 @@ export default function MedicationRequestsPage() {
   const limit = searchParams?.get('limit') ?? '10';
   const pageNumber = Number(page);
   const pageSize = Number(limit);
+  const auth = useSelector((state: RootState) => state.auth);
 
   const {
     data: requestsData,
@@ -107,6 +112,14 @@ export default function MedicationRequestsPage() {
           item.medicineName.toLowerCase().includes(searchQuery.toLowerCase())
         )
       : true;
+
+    if (auth.userInfo?.role === 'Parent') {
+      return (
+        matchesStatus &&
+        matchesSearch &&
+        request.parentId === auth.userInfo?.accountId
+      );
+    }
 
     return matchesStatus && matchesSearch;
   });
@@ -223,12 +236,72 @@ export default function MedicationRequestsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Danh sách yêu cầu</CardTitle>
-            <Button asChild className="bg-teal-600 hover:bg-teal-700">
-              <Link to="/dashboard/medications/requests/add">
-                <Icons.plus className="mr-2 h-4 w-4" />
-                Tạo yêu cầu mới
-              </Link>
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-teal-600 text-teal-600 hover:bg-teal-50"
+                onClick={() => {
+                  // Prepare data for Excel
+                  const excelData = filteredRequests.map((request) => ({
+                    ID: request.parentMedicationRequestId,
+                    'Học sinh ID': request.studentId,
+                    Thuốc: request.medicationItems
+                      .map(
+                        (item) =>
+                          `${item.medicineName} (${item.dosage}${item.timeOfDay ? ` - ${item.timeOfDay}` : ''})`
+                      )
+                      .join('\n'),
+                    'Ngày bắt đầu': new Date(
+                      request.startDate
+                    ).toLocaleDateString('vi-VN'),
+                    'Ngày kết thúc': new Date(
+                      request.endDate
+                    ).toLocaleDateString('vi-VN'),
+                    'Ngày yêu cầu': new Date(
+                      request.createdAt
+                    ).toLocaleDateString('vi-VN'),
+                    'Trạng thái': getStatusText(request.status)
+                  }));
+
+                  // Create workbook and worksheet
+                  const wb = XLSX.utils.book_new();
+                  const ws = XLSX.utils.json_to_sheet(excelData);
+
+                  // Set column widths
+                  const columnWidths = [
+                    { wch: 10 }, // ID
+                    { wch: 15 }, // Học sinh ID
+                    { wch: 40 }, // Thuốc
+                    { wch: 15 }, // Ngày bắt đầu
+                    { wch: 15 }, // Ngày kết thúc
+                    { wch: 15 }, // Ngày yêu cầu
+                    { wch: 15 }, // Trạng thái
+                    { wch: 30 } // Ghi chú
+                  ];
+                  ws['!cols'] = columnWidths;
+
+                  // Add the worksheet to the workbook
+                  XLSX.utils.book_append_sheet(wb, ws, 'Yêu cầu thuốc');
+
+                  // Generate Excel file
+                  XLSX.writeFile(
+                    wb,
+                    `yeu-cau-thuoc-${new Date().toISOString().split('T')[0]}.xlsx`
+                  );
+                }}
+              >
+                <Icons.download className="mr-2 h-4 w-4" />
+                Xuất Excel
+              </Button>
+              {__helpers.cookie_get('R') === 'Parent' && (
+                <Button asChild className="bg-teal-600 hover:bg-teal-700">
+                  <Link to="/dashboard/medications/requests/add">
+                    <Icons.plus className="mr-2 h-4 w-4" />
+                    Tạo yêu cầu mới
+                  </Link>
+                </Button>
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             {filteredRequests.length > 0 ? (
@@ -306,40 +379,41 @@ export default function MedicationRequestsPage() {
                               <span className="sr-only">Xem chi tiết</span>
                             </Link>
                           </Button>
-                          {request.status.toLowerCase() === 'pending' && (
-                            <>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
-                                onClick={() =>
-                                  handleUpdateStatus(
-                                    request.parentMedicationRequestId,
-                                    'Approved'
-                                  )
-                                }
-                                disabled={updateStatus.isPending}
-                              >
-                                <Icons.check className="h-4 w-4" />
-                                <span className="sr-only">Duyệt</span>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                                onClick={() =>
-                                  handleUpdateStatus(
-                                    request.parentMedicationRequestId,
-                                    'Rejected'
-                                  )
-                                }
-                                disabled={updateStatus.isPending}
-                              >
-                                <Icons.x className="h-4 w-4" />
-                                <span className="sr-only">Từ chối</span>
-                              </Button>
-                            </>
-                          )}
+                          {request.status.toLowerCase() === 'pending' &&
+                            __helpers.cookie_get('R') !== 'Parent' && (
+                              <>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                                  onClick={() =>
+                                    handleUpdateStatus(
+                                      request.parentMedicationRequestId,
+                                      'Approved'
+                                    )
+                                  }
+                                  disabled={updateStatus.isPending}
+                                >
+                                  <Icons.check className="h-4 w-4" />
+                                  <span className="sr-only">Duyệt</span>
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                                  onClick={() =>
+                                    handleUpdateStatus(
+                                      request.parentMedicationRequestId,
+                                      'Rejected'
+                                    )
+                                  }
+                                  disabled={updateStatus.isPending}
+                                >
+                                  <Icons.x className="h-4 w-4" />
+                                  <span className="sr-only">Từ chối</span>
+                                </Button>
+                              </>
+                            )}
                         </div>
                       </TableCell>
                     </TableRow>

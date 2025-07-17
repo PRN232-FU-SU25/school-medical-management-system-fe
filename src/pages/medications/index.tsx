@@ -19,6 +19,23 @@ import {
   useGetMedicalSupplies
 } from '@/queries/medical-supplies.query';
 import { useToast } from '@/components/ui/use-toast';
+import * as XLSX from 'xlsx';
+
+// Define supply types
+const supplyTypes = [
+  { value: 'Medicine', label: 'Thuốc' },
+  { value: 'Equipment', label: 'Thiết bị' },
+  { value: 'FirstAid', label: 'Sơ cứu' },
+  { value: 'Hygiene', label: 'Vệ sinh' },
+  { value: 'Other', label: 'Khác' }
+];
+
+// Define supply statuses
+const supplyStatuses = [
+  { value: 'Available', label: 'Còn hàng' },
+  { value: 'Low', label: 'Sắp hết' },
+  { value: 'Out', label: 'Hết hàng' }
+];
 
 // Định nghĩa cột cho bảng
 const columns = [
@@ -34,7 +51,8 @@ const columns = [
     header: 'Loại',
     cell: ({ row }: { row: { getValue: (key: string) => string } }) => (
       <span className="inline-flex items-center rounded-full bg-teal-50 px-2.5 py-0.5 text-xs font-medium text-teal-700">
-        {row.getValue('type')}
+        {supplyTypes.find((type) => type.value === row.getValue('type'))
+          ?.label || row.getValue('type')}
       </span>
     )
   },
@@ -208,11 +226,60 @@ export default function MedicationsPage() {
             Quản lý thuốc và vật tư y tế
           </CardTitle>
           <div className="flex gap-2">
-            <Button asChild variant="outline" className="gap-2">
-              <Link to="/dashboard/medications/requests">
-                <Icons.clipboardList className="h-4 w-4" />
-                Yêu cầu thuốc
-              </Link>
+            <Button
+              variant="outline"
+              className="border-teal-600 text-teal-600 hover:bg-teal-50"
+              onClick={() => {
+                // Prepare data for Excel
+                const excelData = filteredSupplies.map((supply) => ({
+                  'Tên thuốc/vật tư': supply.name,
+                  Loại:
+                    supplyTypes.find((type) => type.value === supply.type)
+                      ?.label || supply.type,
+                  'Mô tả': supply.description || 'Không có',
+                  'Hướng dẫn': supply.instructions || 'Không có',
+                  'Số lượng': `${supply.quantityAvailable} ${supply.unit || 'Đơn vị'}`,
+                  'Hạn sử dụng': supply.expiryDate
+                    ? new Date(supply.expiryDate).toLocaleDateString('vi-VN')
+                    : 'Không có',
+                  'Trạng thái':
+                    supply.status === 'Available'
+                      ? 'Còn hàng'
+                      : supply.status === 'Low'
+                        ? 'Sắp hết'
+                        : supply.status === 'Out'
+                          ? 'Hết hàng'
+                          : 'Không xác định'
+                }));
+
+                // Create workbook and worksheet
+                const wb = XLSX.utils.book_new();
+                const ws = XLSX.utils.json_to_sheet(excelData);
+
+                // Set column widths
+                const columnWidths = [
+                  { wch: 30 }, // Tên thuốc/vật tư
+                  { wch: 15 }, // Loại
+                  { wch: 30 }, // Mô tả
+                  { wch: 30 }, // Hướng dẫn
+                  { wch: 15 }, // Số lượng
+                  { wch: 15 }, // Hạn sử dụng
+                  { wch: 12 } // Trạng thái
+                ];
+                ws['!cols'] = columnWidths;
+
+                // Add the worksheet to the workbook
+                XLSX.utils.book_append_sheet(wb, ws, 'Thuốc và vật tư y tế');
+
+                // Generate Excel file
+                XLSX.writeFile(
+                  wb,
+                  `thuoc-va-vat-tu-y-te-${new Date().toISOString().split('T')[0]}.xlsx`
+                );
+              }}
+            >
+              <Icons.download className="mr-2 h-4 w-4" />
+              Xuất Excel
             </Button>
             <Button asChild className="bg-teal-600 hover:bg-teal-700">
               <Link to="/dashboard/medications/add">
@@ -244,7 +311,7 @@ export default function MedicationsPage() {
                   <SelectItem value="all">Tất cả loại</SelectItem>
                   {uniqueTypes.map((type, index) => (
                     <SelectItem key={index} value={type || ''}>
-                      {type || 'Không xác định'}
+                      {supplyTypes.find((t) => t.value === type)?.label || type}
                     </SelectItem>
                   ))}
                 </SelectContent>
