@@ -86,9 +86,20 @@ const HealthCheckupDetailPage = lazy(
   () => import('@/pages/health-checkups/detail')
 );
 
+// Blog Management
+const BlogsPage = lazy(() => import('@/pages/blogs'));
+const AddBlogPage = lazy(() => import('@/pages/blogs/create'));
+const EditBlogPage = lazy(() => import('@/pages/blogs/[id]/edit'));
+const BlogsDetailPage = lazy(() => import('@/pages/blogs/[id]'));
+
 // User Management
 const ProfilePage = lazy(() => import('@/pages/profile'));
 const NotificationPage = lazy(() => import('@/pages/notifications'));
+const EditUserPage = lazy(() => import('@/pages/users/[id]/edit'));
+const AddUserPage = lazy(() => import('@/pages/users/create'));
+const UserDetailPage = lazy(() => import('@/pages/users/[id]'));
+const UsersPage = lazy(() => import('@/pages/users'));
+
 // ----------------------------------------------------------------------
 
 export default function AppRouter() {
@@ -357,6 +368,71 @@ export default function AppRouter() {
           element: (
             <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
               <HealthCheckupDetailPage />
+            </RoleRoute>
+          )
+        },
+        //Blog Routes
+        {
+          path: 'blogs',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <BlogsPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'blogs/:id',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <BlogsDetailPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'blogs/create',
+          element: (
+            <RoleRoute allowedRoles={['SchoolNurse']}>
+              <AddBlogPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'blogs/:id/edit',
+          element: (
+            <RoleRoute allowedRoles={['SchoolNurse']}>
+              <EditBlogPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'users',
+          element: (
+            <RoleRoute allowedRoles={['Admin']}>
+              <UsersPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'users/:id',
+          element: (
+            <RoleRoute allowedRoles={['Admin']}>
+              <UserDetailPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'users/create',
+          element: (
+            <RoleRoute allowedRoles={['Admin']}>
+              <AddUserPage />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'users/:id/edit',
+          element: (
+            <RoleRoute allowedRoles={['Admin']}>
+              <EditUserPage />
             </RoleRoute>
           )
         },

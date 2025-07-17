@@ -16,6 +16,9 @@ import { Badge } from '@/components/ui/badge';
 import { useGetHealthRecords } from '@/queries/health-records.query';
 import { Skeleton } from '@/components/ui/skeleton';
 import * as XLSX from 'xlsx';
+import { RootState } from '@/redux/store';
+import __helpers from '@/helpers';
+import { useSelector } from 'react-redux';
 
 interface HealthRecord {
   healthRecordId: number;
@@ -136,6 +139,8 @@ export default function StudentRecordsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [classFilter, setClassFilter] = useState<string | undefined>(undefined);
   const [searchParams] = useSearchParams();
+  const role = __helpers.cookie_get('R');
+  const auth = useSelector((state: RootState) => state.auth);
 
   // Get page and limit from URL
   const page = searchParams?.get('page') ?? '1';
@@ -159,6 +164,14 @@ export default function StudentRecordsPage() {
       !classFilter ||
       classFilter === 'all' ||
       student.student?.className === classFilter;
+
+    if (role === 'Parent') {
+      return (
+        matchesSearch &&
+        matchesClass &&
+        student.student?.parentId === auth.userInfo.accountId
+      );
+    }
     return matchesSearch && matchesClass;
   });
 

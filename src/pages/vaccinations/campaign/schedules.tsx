@@ -12,6 +12,8 @@ import {
 } from '@/queries/vaccinations.query';
 import DataTable from '@/components/shared/data-table';
 import __helpers from '@/helpers';
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
 
 interface VaccinationSchedule {
   id: number;
@@ -23,6 +25,7 @@ interface VaccinationSchedule {
   isVaccinated: boolean;
   vaccinationRecordId?: number;
   status: string;
+  parentId: number;
 }
 
 export default function VaccinationSchedules() {
@@ -32,11 +35,21 @@ export default function VaccinationSchedules() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
   const role = __helpers.cookie_get('R');
+  const auth = useSelector((state: RootState) => state.auth);
   const { data, isLoading } = useGetCampaignVaccinationSchedules(
     parseInt(campaignId || '0'),
     currentPage,
     pageSize
   );
+
+  const filteredSchedules: any = (
+    (data?.items as VaccinationSchedule[]) || []
+  ).filter((schedule) => {
+    if (role === 'Parent') {
+      return schedule.parentId === auth.userInfo.accountId;
+    }
+    return true;
+  });
 
   const { mutateAsync: getVaccinationRecordByCampaignAndStudent } =
     useGetVaccinationRecordByCampaignAndStudent();
@@ -166,12 +179,12 @@ export default function VaccinationSchedules() {
         <div className="space-y-4">
           <DataTable
             columns={columns}
-            data={data?.items || []}
-            pageCount={data?.totalPages || 1}
+            data={filteredSchedules || []}
+            pageCount={Math.ceil(filteredSchedules.length / pageSize)}
           />
 
           <div className="text-sm text-gray-500">
-            Tổng số: {data?.totalItems || 0} lịch tiêm chủng
+            Tổng số: {filteredSchedules.length || 0} lịch tiêm chủng
           </div>
         </div>
       </CardContent>

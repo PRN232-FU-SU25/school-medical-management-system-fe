@@ -24,6 +24,9 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select';
+import { RootState } from '@/redux/store';
+import { useSelector } from 'react-redux';
+import __helpers from '@/helpers';
 
 const formSchema = z.object({
   studentId: z.number().min(1, 'Vui lòng chọn học sinh'),
@@ -40,6 +43,8 @@ export default function AddHealthRecordPage() {
   const { mutateAsync: upsertHealthRecord, isPending } =
     useUpsertHealthRecord();
   const { data: studentsData } = useGetStudents(1, 100); // Lấy danh sách học sinh
+  const role = __helpers.cookie_get('R');
+  const auth = useSelector((state: RootState) => state.auth);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -97,14 +102,23 @@ export default function AddHealthRecordPage() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {studentsData?.items?.map((student) => (
-                          <SelectItem
-                            key={student?.studentId}
-                            value={student?.studentId.toString()}
-                          >
-                            {student?.fullName} - {student?.className}
-                          </SelectItem>
-                        ))}
+                        {studentsData?.items
+                          ?.filter((student) => {
+                            if (role === 'Parent') {
+                              return (
+                                student.parentId === auth.userInfo.accountId
+                              );
+                            }
+                            return true;
+                          })
+                          .map((student) => (
+                            <SelectItem
+                              key={student?.studentId}
+                              value={student?.studentId.toString()}
+                            >
+                              {student?.fullName} - {student?.className}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />

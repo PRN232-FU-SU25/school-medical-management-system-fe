@@ -18,6 +18,9 @@ import {
   useGetMedicalEvents
 } from '@/queries/medical-events.query';
 import * as XLSX from 'xlsx';
+import __helpers from '@/helpers';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 const evenTypeMap = {
   Accident: 'Tai nạn',
@@ -104,6 +107,8 @@ export default function MedicalEventsPage() {
     undefined
   );
   const [searchParams] = useSearchParams();
+  const role = __helpers.cookie_get('R');
+  const auth = useSelector((state: RootState) => state.auth);
 
   // Get page and limit from URL
   const page = searchParams?.get('page') ?? '1';
@@ -127,6 +132,13 @@ export default function MedicalEventsPage() {
       !eventTypeFilter ||
       eventTypeFilter === 'all' ||
       event.eventType === eventTypeFilter;
+    if (role === 'Parent') {
+      return (
+        matchesSearch &&
+        matchesEventType &&
+        event.student.parentId === auth.userInfo.accountId
+      );
+    }
     return matchesSearch && matchesEventType;
   });
 

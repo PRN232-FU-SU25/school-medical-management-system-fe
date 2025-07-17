@@ -9,8 +9,12 @@ import {
 } from '@/components/ui/card';
 import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import { useGetBlogs } from '@/queries/blog.query';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 export default function HomePage() {
+  const { data: blogs, isLoading } = useGetBlogs();
   return (
     <>
       <Helmet>
@@ -260,67 +264,55 @@ export default function HomePage() {
           </h2>
 
           <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  Kế hoạch khám sức khỏe định kỳ học kỳ II năm 2024
-                </CardTitle>
-                <CardDescription>
-                  20/02/2024 • Thông báo chính thức
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="line-clamp-3">
-                  Nhà trường tổ chức khám sức khỏe định kỳ cho học sinh từ ngày
-                  01/03 đến 15/03/2024. Xem lịch khám chi tiết theo từng lớp...
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="ghost">
-                  <Link to="/blog/health-checkup-2024">Đọc tiếp</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  Hướng dẫn phòng chống cúm mùa trong trường học
-                </CardTitle>
-                <CardDescription>15/02/2024 • Y tế dự phòng</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="line-clamp-3">
-                  Trước tình hình dịch cúm mùa đang gia tăng, phòng y tế trường
-                  hướng dẫn các biện pháp phòng ngừa hiệu quả...
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="ghost">
-                  <Link to="/blog/flu-prevention">Đọc tiếp</Link>
-                </Button>
-              </CardFooter>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  Kết quả khảo sát dinh dưỡng học đường 2023
-                </CardTitle>
-                <CardDescription>10/02/2024 • Báo cáo y tế</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="line-clamp-3">
-                  Tổng hợp kết quả khảo sát thói quen ăn uống và tình trạng dinh
-                  dưỡng của học sinh năm học 2023-2024...
-                </p>
-              </CardContent>
-              <CardFooter>
-                <Button asChild variant="ghost">
-                  <Link to="/blog/nutrition-survey">Đọc tiếp</Link>
-                </Button>
-              </CardFooter>
-            </Card>
+            {isLoading ? (
+              <Skeleton className="h-[300px] w-full" />
+            ) : (
+              blogs?.items.slice(0, 3).map((blog) => (
+                <Card key={blog.blogId}>
+                  <CardHeader>
+                    <div className="aspect-video w-full overflow-hidden">
+                      <img
+                        src={blog.thumbnailUrl}
+                        alt={blog.title}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="mt-4 flex justify-between gap-2">
+                      <CardTitle>{blog.title}</CardTitle>
+                      <CardDescription>
+                        {blog.publishAt
+                          ? new Date(blog.publishAt).toLocaleDateString(
+                              'vi-VN',
+                              {
+                                day: '2-digit',
+                                month: '2-digit',
+                                year: 'numeric'
+                              }
+                            )
+                          : 'Không có ngày'}
+                      </CardDescription>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {blog.tags.split(',').map((tag) => (
+                        <Badge variant="secondary" key={tag}>
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="line-clamp-3">
+                      {blog.description ?? 'Không có mô tả'}
+                    </p>
+                  </CardContent>
+                  <CardFooter>
+                    <Button asChild variant="ghost">
+                      <Link to={`/blog/${blog.blogId}`}>Đọc tiếp</Link>
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))
+            )}
           </div>
 
           <div className="mt-8 text-center">

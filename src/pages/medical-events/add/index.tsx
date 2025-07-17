@@ -16,6 +16,9 @@ import { useGetSchoolNurses } from '@/queries/school-nurse.query';
 import { useGetStudents } from '@/queries/student.query';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import __helpers from '@/helpers';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store';
 
 // Define event types based on the backend enum
 const eventTypes = [
@@ -33,6 +36,8 @@ export default function AddMedicalEventPage() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const createMedicalEvent = useCreateMedicalEvent();
+  const role = __helpers.cookie_get('R');
+  const auth = useSelector((state: RootState) => state.auth);
 
   // Fetch students and nurses for dropdowns
   const { data: studentsData, isLoading: isLoadingStudents } = useGetStudents(
@@ -140,14 +145,21 @@ export default function AddMedicalEventPage() {
                   <SelectValue placeholder="Chọn học sinh" />
                 </SelectTrigger>
                 <SelectContent>
-                  {studentsData?.items?.map((student) => (
-                    <SelectItem
-                      key={student.studentId}
-                      value={student.studentId?.toString()}
-                    >
-                      {student.fullName} - {student.className}
-                    </SelectItem>
-                  ))}
+                  {studentsData?.items
+                    ?.filter((student) => {
+                      if (role === 'Parent') {
+                        return student.parentId === auth.userInfo.accountId;
+                      }
+                      return true;
+                    })
+                    .map((student) => (
+                      <SelectItem
+                        key={student.studentId}
+                        value={student.studentId?.toString()}
+                      >
+                        {student.fullName} - {student.className}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

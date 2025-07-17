@@ -213,58 +213,60 @@ export default function VaccinationsPage() {
       <Card className="border-none shadow-md">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 border-b bg-gradient-to-r from-teal-50 to-cyan-50 pb-4">
           <CardTitle className="text-teal-900">Quản lý tiêm chủng</CardTitle>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="border-teal-600 text-teal-600 hover:bg-teal-50"
-              onClick={() => {
-                // Prepare data for Excel
-                const excelData = filteredCampaigns.map(
-                  (campaign: VaccinationCampaign) => ({
-                    'Tên chiến dịch': campaign.name,
-                    'Mô tả': campaign.description || 'Không có',
-                    'Ngày tổ chức': new Date(campaign.date).toLocaleDateString(
-                      'vi-VN'
-                    ),
-                    'Trạng thái': campaign.status,
-                    'Ghi chú': 'Không có' // No notes field in the new interface
-                  })
-                );
+          {role !== 'Parent' && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                className="border-teal-600 text-teal-600 hover:bg-teal-50"
+                onClick={() => {
+                  // Prepare data for Excel
+                  const excelData = filteredCampaigns.map(
+                    (campaign: VaccinationCampaign) => ({
+                      'Tên chiến dịch': campaign.name,
+                      'Mô tả': campaign.description || 'Không có',
+                      'Ngày tổ chức': new Date(
+                        campaign.date
+                      ).toLocaleDateString('vi-VN'),
+                      'Trạng thái': campaign.status,
+                      'Ghi chú': 'Không có' // No notes field in the new interface
+                    })
+                  );
 
-                // Create workbook and worksheet
-                const wb = XLSX.utils.book_new();
-                const ws = XLSX.utils.json_to_sheet(excelData);
+                  // Create workbook and worksheet
+                  const wb = XLSX.utils.book_new();
+                  const ws = XLSX.utils.json_to_sheet(excelData);
 
-                // Set column widths
-                const columnWidths = [
-                  { wch: 30 }, // Tên chiến dịch
-                  { wch: 30 }, // Mô tả
-                  { wch: 15 }, // Ngày tổ chức
-                  { wch: 15 }, // Trạng thái
-                  { wch: 30 } // Ghi chú
-                ];
-                ws['!cols'] = columnWidths;
+                  // Set column widths
+                  const columnWidths = [
+                    { wch: 30 }, // Tên chiến dịch
+                    { wch: 30 }, // Mô tả
+                    { wch: 15 }, // Ngày tổ chức
+                    { wch: 15 }, // Trạng thái
+                    { wch: 30 } // Ghi chú
+                  ];
+                  ws['!cols'] = columnWidths;
 
-                // Add the worksheet to the workbook
-                XLSX.utils.book_append_sheet(wb, ws, 'Chiến dịch tiêm chủng');
+                  // Add the worksheet to the workbook
+                  XLSX.utils.book_append_sheet(wb, ws, 'Chiến dịch tiêm chủng');
 
-                // Generate Excel file
-                XLSX.writeFile(
-                  wb,
-                  `chien-dich-tiem-chung-${new Date().toISOString().split('T')[0]}.xlsx`
-                );
-              }}
-            >
-              <Icons.download className="mr-2 h-4 w-4" />
-              Xuất Excel
-            </Button>
-            <Button asChild className="bg-teal-600 hover:bg-teal-700">
-              <Link to="/dashboard/vaccinations/campaign/create">
-                <Icons.plus className="mr-2 h-4 w-4" />
-                Tạo chiến dịch mới
-              </Link>
-            </Button>
-          </div>
+                  // Generate Excel file
+                  XLSX.writeFile(
+                    wb,
+                    `chien-dich-tiem-chung-${new Date().toISOString().split('T')[0]}.xlsx`
+                  );
+                }}
+              >
+                <Icons.download className="mr-2 h-4 w-4" />
+                Xuất Excel
+              </Button>
+              <Button asChild className="bg-teal-600 hover:bg-teal-700">
+                <Link to="/dashboard/vaccinations/campaign/create">
+                  <Icons.plus className="mr-2 h-4 w-4" />
+                  Tạo chiến dịch mới
+                </Link>
+              </Button>
+            </div>
+          )}
         </CardHeader>
 
         <CardContent className="pt-6">

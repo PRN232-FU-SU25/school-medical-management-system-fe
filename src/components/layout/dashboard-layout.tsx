@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -96,6 +96,20 @@ const navItems: NavItem[] = [
         description: 'Xem danh sách yêu cầu tiêm'
       }
     ]
+  },
+  {
+    title: 'Bài viết',
+    href: '/dashboard/blogs',
+    icon: 'book',
+    roles: ['Admin', 'SchoolNurse'],
+    description: 'Quản lý bài viết'
+  },
+  {
+    title: 'Người dùng',
+    href: '/dashboard/users',
+    icon: 'user',
+    roles: ['Admin'],
+    description: 'Quản lý người dùng'
   }
   // {
   //   title: 'Kiểm tra sức khỏe',

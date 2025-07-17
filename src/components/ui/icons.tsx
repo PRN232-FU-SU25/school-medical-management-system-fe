@@ -96,12 +96,14 @@ import {
   FileSpreadsheet,
   TrendingUp,
   Minus,
-  UserCheck
+  UserCheck,
+  Book
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  book: Book,
   userCheck: UserCheck,
   trendingUp: TrendingUp,
   minus: Minus,

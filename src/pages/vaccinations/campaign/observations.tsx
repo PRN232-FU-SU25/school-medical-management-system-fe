@@ -38,6 +38,7 @@ import {
   useCreateObservation,
   useGetRecordObservations
 } from '@/queries/vaccinations.query';
+import __helpers from '@/helpers';
 
 // Định nghĩa schema validation
 const observationFormSchema = z.object({
@@ -70,6 +71,7 @@ export default function VaccinationObservations() {
   const [searchParams] = useSearchParams();
   const recordId = searchParams.get('recordId');
   const { toast } = useToast();
+  const role = __helpers.cookie_get('R');
 
   const {
     data: observations,
@@ -167,7 +169,9 @@ export default function VaccinationObservations() {
         <Tabs defaultValue="list" className="space-y-6">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="list">Danh sách theo dõi</TabsTrigger>
-            <TabsTrigger value="add">Thêm mới theo dõi</TabsTrigger>
+            {role !== 'Parent' && (
+              <TabsTrigger value="add">Thêm mới theo dõi</TabsTrigger>
+            )}
           </TabsList>
 
           <TabsContent value="list">

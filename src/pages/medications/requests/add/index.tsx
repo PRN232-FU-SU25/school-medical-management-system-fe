@@ -179,14 +179,21 @@ export default function AddMedicationRequestPage() {
                   <SelectValue placeholder="Chọn học sinh" />
                 </SelectTrigger>
                 <SelectContent>
-                  {studentsData?.items?.map((student) => (
-                    <SelectItem
-                      key={student.studentId}
-                      value={student.studentId?.toString()}
-                    >
-                      {student.fullName} - {student.className}
-                    </SelectItem>
-                  ))}
+                  {studentsData?.items
+                    ?.filter((student) => {
+                      if (auth.role === 'Parent') {
+                        return student.parentId === auth.userInfo.accountId;
+                      }
+                      return true;
+                    })
+                    .map((student) => (
+                      <SelectItem
+                        key={student.studentId}
+                        value={student.studentId?.toString()}
+                      >
+                        {student.fullName} - {student.className}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>

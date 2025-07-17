@@ -28,6 +28,7 @@ export interface MedicalEventResponse {
   nurseFullName: string;
   date: string;
   createAt: string;
+  student: Student;
 }
 
 export const useGetMedicalEvents = (
