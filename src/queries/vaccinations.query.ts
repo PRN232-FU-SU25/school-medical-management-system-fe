@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import BaseRequest from '@/config/axios.config';
 
 // Vaccination Consents
+// yêu cầu tiêm đã được chấp thuận
 export const useGetParentConsents = () => {
   return useQuery({
     queryKey: ['parent-consents'],
@@ -14,6 +15,7 @@ export const useGetParentConsents = () => {
   });
 };
 
+// yêu cầu tiêm chưa được chấp thuận
 export const useGetNewParentConsents = () => {
   return useQuery({
     queryKey: ['new-parent-consents'],
@@ -42,6 +44,7 @@ export const useGetCampaignConsents = (
   });
 };
 
+// đông ý tiêm chủng
 export const useUpdateConsent = () => {
   return useMutation({
     mutationFn: async ({ id, data }: { id: number; data: any }) => {

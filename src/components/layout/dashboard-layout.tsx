@@ -85,32 +85,41 @@ const navItems: NavItem[] = [
     title: 'Tiêm chủng',
     href: '/dashboard/vaccinations',
     icon: 'syringe',
-    roles: ['Admin', 'SchoolNurse'],
-    description: 'Quản lý tiêm chủng và chiến dịch'
-  },
-  {
-    title: 'Kiểm tra sức khỏe',
-    href: '/dashboard/health-checkups',
-    icon: 'stethoscope',
-    roles: ['Admin', 'SchoolNurse'],
-    description: 'Quản lý kiểm tra sức khỏe định kỳ',
+    roles: ['Admin', 'SchoolNurse', 'Parent'],
+    description: 'Quản lý tiêm chủng và chiến dịch',
     children: [
       {
-        title: 'Danh sách kiểm tra',
-        href: '/dashboard/health-checkups',
-        icon: 'list',
-        roles: ['Admin', 'SchoolNurse'],
-        description: 'Xem lịch sử kiểm tra sức khỏe'
-      },
-      {
-        title: 'Tạo đợt kiểm tra',
-        href: '/dashboard/health-checkups/campaign',
-        icon: 'calendar',
-        roles: ['Admin', 'SchoolNurse'],
-        description: 'Lập kế hoạch kiểm tra sức khỏe'
+        title: 'Yêu cầu tiêm',
+        href: '/dashboard/vaccinations/campaign/requests',
+        roles: ['Parent'],
+        icon: 'clipboardList',
+        description: 'Xem danh sách yêu cầu tiêm'
       }
     ]
   }
+  // {
+  //   title: 'Kiểm tra sức khỏe',
+  //   href: '/dashboard/health-checkups',
+  //   icon: 'stethoscope',
+  //   roles: ['Admin', 'SchoolNurse'],
+  //   description: 'Quản lý kiểm tra sức khỏe định kỳ',
+  //   children: [
+  //     {
+  //       title: 'Danh sách kiểm tra',
+  //       href: '/dashboard/health-checkups',
+  //       icon: 'list',
+  //       roles: ['Admin', 'SchoolNurse'],
+  //       description: 'Xem lịch sử kiểm tra sức khỏe'
+  //     },
+  //     {
+  //       title: 'Tạo đợt kiểm tra',
+  //       href: '/dashboard/health-checkups/campaign',
+  //       icon: 'calendar',
+  //       roles: ['Admin', 'SchoolNurse'],
+  //       description: 'Lập kế hoạch kiểm tra sức khỏe'
+  //     }
+  //   ]
+  // }
 ];
 
 export default function DashboardLayout({

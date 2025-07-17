@@ -11,6 +11,7 @@ import {
   useGetCampaignVaccinationSchedules
 } from '@/queries/vaccinations.query';
 import DataTable from '@/components/shared/data-table';
+import __helpers from '@/helpers';
 
 interface VaccinationSchedule {
   id: number;
@@ -30,7 +31,7 @@ export default function VaccinationSchedules() {
   const { toast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(10);
-
+  const role = __helpers.cookie_get('R');
   const { data, isLoading } = useGetCampaignVaccinationSchedules(
     parseInt(campaignId || '0'),
     currentPage,
@@ -102,16 +103,18 @@ export default function VaccinationSchedules() {
                 Theo dõi sau tiêm
               </Button>
             ) : (
-              <Button
-                variant="default"
-                size="sm"
-                className="bg-blue-600 hover:bg-blue-700"
-                onClick={() =>
-                  handleStartVaccination(schedule.id, schedule.studentId)
-                }
-              >
-                Tiêm chủng
-              </Button>
+              role !== 'Parent' && (
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() =>
+                    handleStartVaccination(schedule.id, schedule.studentId)
+                  }
+                >
+                  Tiêm chủng
+                </Button>
+              )
             )}
           </div>
         );

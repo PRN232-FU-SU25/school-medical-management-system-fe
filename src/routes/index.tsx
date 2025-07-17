@@ -73,6 +73,9 @@ const VaccinationRecord = lazy(
 const VaccinationObservations = lazy(
   () => import('@/pages/vaccinations/campaign/observations')
 );
+const VaccinationRequests = lazy(
+  () => import('@/pages/vaccinations/campaign/requests')
+);
 
 // Health Checkups
 const HealthCheckupsPage = lazy(() => import('@/pages/health-checkups'));
@@ -271,7 +274,7 @@ export default function AppRouter() {
         {
           path: 'vaccinations',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse', 'Parent']}>
               <VaccinationsPage />
             </RoleRoute>
           )
@@ -301,9 +304,17 @@ export default function AppRouter() {
           )
         },
         {
+          path: 'vaccinations/campaign/requests',
+          element: (
+            <RoleRoute allowedRoles={['Parent']}>
+              <VaccinationRequests />
+            </RoleRoute>
+          )
+        },
+        {
           path: 'vaccinations/campaign/:campaignId/schedules',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse', 'Parent']}>
               <VaccinationSchedules />
             </RoleRoute>
           )
@@ -319,7 +330,7 @@ export default function AppRouter() {
         {
           path: 'vaccinations/campaign/:campaignId/observations',
           element: (
-            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse', 'Parent']}>
               <VaccinationObservations />
             </RoleRoute>
           )

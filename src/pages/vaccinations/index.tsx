@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGetVaccinationCampaigns } from '@/queries/vaccinations.query';
 import * as XLSX from 'xlsx';
+import __helpers from '@/helpers';
 
 interface VaccinationCampaign {
   campaignId: number;
@@ -24,6 +25,8 @@ interface VaccinationCampaign {
   date: string;
   status?: string; // Added to fix linter errors
 }
+
+const role = __helpers.cookie_get('R');
 
 // Định nghĩa cột cho bảng
 const columns = [
@@ -75,19 +78,21 @@ const columns = [
       const campaign = row.original;
       return (
         <div className="flex justify-end gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
-            asChild
-          >
-            <Link
-              to={`/dashboard/vaccinations/campaign/${campaign.campaignId}/consents`}
+          {role !== 'Parent' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+              asChild
             >
-              <Icons.userCheck className="h-4 w-4" />
-              <span className="sr-only">Phiếu đồng ý</span>
-            </Link>
-          </Button>
+              <Link
+                to={`/dashboard/vaccinations/campaign/${campaign.campaignId}/consents`}
+              >
+                <Icons.userCheck className="h-4 w-4" />
+                <span className="sr-only">Phiếu đồng ý</span>
+              </Link>
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="icon"
@@ -101,19 +106,21 @@ const columns = [
               <span className="sr-only">Lịch tiêm</span>
             </Link>
           </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
-            asChild
-          >
-            <Link
-              to={`/dashboard/vaccinations/campaign/${campaign.campaignId}`}
+          {role !== 'Parent' && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 text-teal-600 hover:bg-teal-50 hover:text-teal-700"
+              asChild
             >
-              <Icons.pencil className="h-4 w-4" />
-              <span className="sr-only">Chỉnh sửa</span>
-            </Link>
-          </Button>
+              <Link
+                to={`/dashboard/vaccinations/campaign/${campaign.campaignId}`}
+              >
+                <Icons.pencil className="h-4 w-4" />
+                <span className="sr-only">Chỉnh sửa</span>
+              </Link>
+            </Button>
+          )}
         </div>
       );
     }
