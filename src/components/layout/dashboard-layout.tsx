@@ -86,23 +86,7 @@ const navItems: NavItem[] = [
     href: '/dashboard/vaccinations',
     icon: 'syringe',
     roles: ['Admin', 'SchoolNurse'],
-    description: 'Quản lý tiêm chủng và chiến dịch',
-    children: [
-      {
-        title: 'Danh sách tiêm chủng',
-        href: '/dashboard/vaccinations',
-        icon: 'list',
-        roles: ['Admin', 'SchoolNurse'],
-        description: 'Xem lịch sử và kế hoạch tiêm chủng'
-      },
-      {
-        title: 'Tạo chiến dịch',
-        href: '/dashboard/vaccinations/campaign',
-        icon: 'calendar',
-        roles: ['Admin', 'SchoolNurse'],
-        description: 'Lập kế hoạch chiến dịch tiêm chủng'
-      }
-    ]
+    description: 'Quản lý tiêm chủng và chiến dịch'
   },
   {
     title: 'Kiểm tra sức khỏe',

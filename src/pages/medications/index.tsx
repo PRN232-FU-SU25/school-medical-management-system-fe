@@ -18,7 +18,6 @@ import {
   MedicalSupplyResponse,
   useGetMedicalSupplies
 } from '@/queries/medical-supplies.query';
-import { useToast } from '@/components/ui/use-toast';
 import * as XLSX from 'xlsx';
 
 // Define supply types
@@ -28,13 +27,6 @@ const supplyTypes = [
   { value: 'FirstAid', label: 'Sơ cứu' },
   { value: 'Hygiene', label: 'Vệ sinh' },
   { value: 'Other', label: 'Khác' }
-];
-
-// Define supply statuses
-const supplyStatuses = [
-  { value: 'Available', label: 'Còn hàng' },
-  { value: 'Low', label: 'Sắp hết' },
-  { value: 'Out', label: 'Hết hàng' }
 ];
 
 // Định nghĩa cột cho bảng
@@ -148,7 +140,6 @@ export default function MedicationsPage() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(
     undefined
   );
-  const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
   // Get page and limit from URL

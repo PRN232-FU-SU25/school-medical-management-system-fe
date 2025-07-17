@@ -58,10 +58,21 @@ const MedicationRequestDetailPage = lazy(
 
 // Vaccination Management
 const VaccinationsPage = lazy(() => import('@/pages/vaccinations'));
-const VaccinationCampaignPage = lazy(
-  () => import('@/pages/vaccinations/campaign')
+const VaccinationCampaignForm = lazy(
+  () => import('@/pages/vaccinations/campaign/create')
 );
-const VaccinationDetailPage = lazy(() => import('@/pages/vaccinations/detail'));
+const VaccinationConsents = lazy(
+  () => import('@/pages/vaccinations/campaign/consents')
+);
+const VaccinationSchedules = lazy(
+  () => import('@/pages/vaccinations/campaign/schedules')
+);
+const VaccinationRecord = lazy(
+  () => import('@/pages/vaccinations/campaign/record')
+);
+const VaccinationObservations = lazy(
+  () => import('@/pages/vaccinations/campaign/observations')
+);
 
 // Health Checkups
 const HealthCheckupsPage = lazy(() => import('@/pages/health-checkups'));
@@ -266,18 +277,50 @@ export default function AppRouter() {
           )
         },
         {
-          path: 'vaccinations/campaign',
+          path: 'vaccinations/campaign/create',
           element: (
             <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
-              <VaccinationCampaignPage />
+              <VaccinationCampaignForm />
             </RoleRoute>
           )
         },
         {
-          path: 'vaccinations/:id',
+          path: 'vaccinations/campaign/:campaignId',
           element: (
             <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
-              <VaccinationDetailPage />
+              <VaccinationCampaignForm />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'vaccinations/campaign/:campaignId/consents',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationConsents />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'vaccinations/campaign/:campaignId/schedules',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationSchedules />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'vaccinations/campaign/:campaignId/record',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationRecord />
+            </RoleRoute>
+          )
+        },
+        {
+          path: 'vaccinations/campaign/:campaignId/observations',
+          element: (
+            <RoleRoute allowedRoles={['Admin', 'SchoolNurse']}>
+              <VaccinationObservations />
             </RoleRoute>
           )
         },

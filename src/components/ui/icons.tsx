@@ -92,12 +92,21 @@ import {
   ClipboardX,
   Clock,
   Inbox,
-  XCircle
+  XCircle,
+  FileSpreadsheet,
+  TrendingUp,
+  Minus,
+  UserCheck
 } from 'lucide-react';
 
 export type Icon = LucideIcon;
 
 export const Icons = {
+  userCheck: UserCheck,
+  trendingUp: TrendingUp,
+  minus: Minus,
+  fileSpreadsheet: FileSpreadsheet,
+  filePdf: File,
   xCircle: XCircle,
   x: X,
   inbox: Inbox,
