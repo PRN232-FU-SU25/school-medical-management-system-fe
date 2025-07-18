@@ -44,6 +44,7 @@ export default function MedicationRequestsPage() {
   const pageNumber = Number(page);
   const pageSize = Number(limit);
   const auth = useSelector((state: RootState) => state.auth);
+  const role = __helpers.cookie_get('R');
 
   const {
     data: requestsData,
@@ -175,39 +176,41 @@ export default function MedicationRequestsPage() {
     <>
       <div className="space-y-6">
         {/* Thống kê */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Tổng số yêu cầu
-              </CardTitle>
-              <Icons.clipboardList className="h-4 w-4 text-gray-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {requestsData?.totalRecords || 0}
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Chờ duyệt</CardTitle>
-              <Icons.clock className="h-4 w-4 text-yellow-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{pendingCount}</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Đã duyệt</CardTitle>
-              <Icons.check className="h-4 w-4 text-green-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{approvedCount}</div>
-            </CardContent>
-          </Card>
-        </div>
+        {role !== 'Parent' && (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Tổng số yêu cầu
+                </CardTitle>
+                <Icons.clipboardList className="h-4 w-4 text-gray-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {requestsData?.totalRecords || 0}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Chờ duyệt</CardTitle>
+                <Icons.clock className="h-4 w-4 text-yellow-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{pendingCount}</div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Đã duyệt</CardTitle>
+                <Icons.check className="h-4 w-4 text-green-500" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{approvedCount}</div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Bộ lọc */}
         <Card>

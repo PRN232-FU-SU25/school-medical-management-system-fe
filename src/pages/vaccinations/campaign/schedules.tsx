@@ -114,7 +114,7 @@ export default function VaccinationSchedules() {
                 Theo dõi sau tiêm
               </Button>
             ) : (
-              role !== 'Parent' && (
+              role === 'SchoolNurse' && (
                 <Button
                   variant="default"
                   size="sm"
