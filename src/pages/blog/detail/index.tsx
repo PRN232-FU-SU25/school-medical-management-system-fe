@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { useGetBlogById } from '@/queries/blog.query';
 import { Skeleton } from '@/components/ui/skeleton';
+import 'react-quill/dist/quill.snow.css';
+
 export default function BlogDetailPage() {
   const { id } = useParams();
 
@@ -42,7 +44,15 @@ export default function BlogDetailPage() {
                   <div>
                     <p className="font-medium">{blogPost.nurseName}</p>
                     <p className="text-sm text-gray-200">
-                      {blogPost.publishAt}
+                      {blogPost.publishAt &&
+                        new Date(blogPost.publishAt).toLocaleDateString(
+                          'vi-VN',
+                          {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          }
+                        )}
                     </p>
                   </div>
                 </div>
@@ -53,22 +63,21 @@ export default function BlogDetailPage() {
             <Card className="border-none bg-inherit shadow-none">
               <CardContent className="p-0">
                 <div className="mb-8 flex flex-wrap gap-2">
-                  {blogPost.tags.split(', ').map((tag, index) => (
-                    <Badge key={index} variant="outline" className="bg-white">
-                      {tag}
-                    </Badge>
-                  ))}
+                  {blogPost.tags &&
+                    blogPost.tags.split(',').map((tag, index) => (
+                      <Badge key={index} variant="outline" className="bg-white">
+                        {tag.trim()}
+                      </Badge>
+                    ))}
                 </div>
                 <div
                   className={cn(
-                    'prose prose-lg max-w-none',
-                    'prose-headings:font-bold prose-headings:text-gray-900',
-                    'prose-p:text-gray-700',
-                    'prose-lead:text-xl prose-lead:text-gray-600',
-                    'prose-img:rounded-lg',
-                    'prose-a:text-blue-600 hover:prose-a:text-blue-800'
+                    'prose prose-headings:text-teal-900 prose-a:text-teal-600 max-w-none',
+                    'prose-img:rounded-lg ql-editor'
                   )}
-                  dangerouslySetInnerHTML={{ __html: blogPost.content }}
+                  dangerouslySetInnerHTML={{
+                    __html: blogPost.content
+                  }}
                 />
 
                 {/* Actions */}

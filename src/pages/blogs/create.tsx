@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/components/ui/use-toast';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { useCreateBlog } from '@/queries/blog.query';
 import { useUploadFile } from '@/queries/file.query';
 import { useSelector } from 'react-redux';
@@ -25,6 +26,37 @@ export default function CreateBlogPage() {
     thumbnailUrl: '',
     publishAt: ''
   });
+
+  // Quill editor modules and formats
+  const modules = useMemo(
+    () => ({
+      toolbar: [
+        [{ header: [1, 2, 3, 4, 5, 6, false] }],
+        ['bold', 'italic', 'underline', 'strike'],
+        [{ list: 'ordered' }, { list: 'bullet' }],
+        [{ color: [] }, { background: [] }],
+        [{ align: [] }],
+        ['link', 'image'],
+        ['clean']
+      ]
+    }),
+    []
+  );
+
+  const formats = [
+    'header',
+    'bold',
+    'italic',
+    'underline',
+    'strike',
+    'list',
+    'bullet',
+    'color',
+    'background',
+    'align',
+    'link',
+    'image'
+  ];
 
   const createBlog = useCreateBlog();
   const uploadFile = useUploadFile();
@@ -132,16 +164,18 @@ export default function CreateBlogPage() {
 
             <div className="space-y-2">
               <Label htmlFor="content">Nội dung</Label>
-              <Textarea
-                id="content"
-                value={formData.content}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, content: e.target.value }))
-                }
-                placeholder="Nhập nội dung bài viết..."
-                className="min-h-[200px]"
-                required
-              />
+              <div className="min-h-[300px] rounded-md border">
+                <ReactQuill
+                  value={formData.content}
+                  onChange={(content) =>
+                    setFormData((prev) => ({ ...prev, content }))
+                  }
+                  modules={modules}
+                  formats={formats}
+                  placeholder="Nhập nội dung bài viết..."
+                  className="h-[250px]"
+                />
+              </div>
             </div>
 
             <div className="space-y-2">
