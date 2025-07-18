@@ -30,13 +30,13 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  {
-    title: 'Tổng quan',
-    href: '/dashboard',
-    icon: 'dashboard',
-    roles: ['Admin', 'SchoolNurse'],
-    description: 'Thống kê và báo cáo tổng quan'
-  },
+  // {
+  //   title: 'Tổng quan',
+  //   href: '/dashboard',
+  //   icon: 'dashboard',
+  //   roles: ['Admin', 'SchoolNurse'],
+  //   description: 'Thống kê và báo cáo tổng quan'
+  // },
   {
     title: 'Hồ sơ sức khỏe',
     href: '/dashboard/student-records',
@@ -202,7 +202,7 @@ export default function DashboardLayout({
             </Link>
           </div>
           <div className="flex items-center gap-2">
-            <Link to="/dashboard/notifications">
+            {/* <Link to="/dashboard/notifications">
               <Button
                 variant="ghost"
                 size="icon"
@@ -212,7 +212,7 @@ export default function DashboardLayout({
                 <span className="absolute right-1 top-1 flex h-2 w-2 rounded-full bg-red-500"></span>
                 <span className="sr-only">Thông báo</span>
               </Button>
-            </Link>
+            </Link> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -255,7 +255,7 @@ export default function DashboardLayout({
                     <span>Hồ sơ cá nhân</span>
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
+                {/* <DropdownMenuItem asChild>
                   <Link
                     to="/dashboard/notifications"
                     className="flex w-full items-center"
@@ -263,7 +263,7 @@ export default function DashboardLayout({
                     <Icons.bell className="mr-2 h-4 w-4" />
                     <span>Thông báo</span>
                   </Link>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={handleLogout}

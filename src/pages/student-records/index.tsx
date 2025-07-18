@@ -169,7 +169,7 @@ export default function StudentRecordsPage() {
       return (
         matchesSearch &&
         matchesClass &&
-        student.student?.parentId === auth.userInfo.accountId
+        student.student?.parentId === auth.userInfo?.accountId
       );
     }
     return matchesSearch && matchesClass;

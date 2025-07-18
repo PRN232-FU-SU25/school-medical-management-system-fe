@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Icons } from '@/components/ui/icons';
-import { RootState } from '@/redux/store';
-import { useSelector } from 'react-redux';
+// import { RootState } from '@/redux/store';
+// import { useSelector } from 'react-redux';
 import {
   BarChart,
   Bar,
@@ -18,7 +18,7 @@ import {
   LineChart,
   Line
 } from 'recharts';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 // Dữ liệu mẫu cho dashboard
 const medicalEventsData = [
@@ -50,12 +50,12 @@ const healthTrendsData = [
 const COLORS = ['#0DB4B9', '#14B8A6', '#0EA5E9', '#8B5CF6', '#F59E0B'];
 
 export default function DashboardPage() {
-  const auth = useSelector((state: RootState) => state.auth);
-  const role = auth.role;
-  const navigate = useNavigate();
-  if (role !== 'Admin' && role !== 'SchoolNurse') {
-    navigate('/');
-  }
+  // const auth = useSelector((state: RootState) => state.auth);
+  // const role = auth.role;
+  // const navigate = useNavigate();
+  // if (role !== 'Admin' && role !== 'SchoolNurse') {
+  //   navigate('/');
+  // }
 
   const overviewData = [
     {

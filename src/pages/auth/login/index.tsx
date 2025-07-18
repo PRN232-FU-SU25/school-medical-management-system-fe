@@ -73,7 +73,7 @@ export default function LoginPage() {
         helpers.cookie_set('R', response.role);
 
         if (response.role === 'Admin' || response.role === 'SchoolNurse') {
-          navigate('/dashboard');
+          navigate('/dashboard/student-records');
         } else {
           navigate('/dashboard/student-records');
         }
