@@ -18,6 +18,7 @@ import {
   LineChart,
   Line
 } from 'recharts';
+import { useNavigate } from 'react-router-dom';
 
 // Dữ liệu mẫu cho dashboard
 const medicalEventsData = [
@@ -51,6 +52,10 @@ const COLORS = ['#0DB4B9', '#14B8A6', '#0EA5E9', '#8B5CF6', '#F59E0B'];
 export default function DashboardPage() {
   const auth = useSelector((state: RootState) => state.auth);
   const role = auth.role;
+  const navigate = useNavigate();
+  if (role !== 'Admin' && role !== 'SchoolNurse') {
+    navigate('/');
+  }
 
   const overviewData = [
     {

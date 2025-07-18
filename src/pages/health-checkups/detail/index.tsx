@@ -1,5 +1,4 @@
-import { useParams } from 'react-router-dom';
-import BasePages from '@/components/shared/base-pages';
+// import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Icons } from '@/components/ui/icons';
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/table';
 
 export default function HealthCheckupDetailPage() {
-  const { id } = useParams();
+  // const { id } = useParams();
 
   // Mock data for demonstration
   const campaign = {

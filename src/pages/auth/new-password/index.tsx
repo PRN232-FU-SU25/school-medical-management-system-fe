@@ -1,12 +1,11 @@
 import BasePages from '@/components/shared/base-pages.js';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/ui/icons';
-import { useSearchParams } from 'react-router-dom';
 // import { useResetPassword } from '@/queries/auth.query';
-import { useRouter } from '@/routes/hooks';
-import { useToast } from '@/components/ui/use-toast';
+// import { useRouter } from '@/routes/hooks';
+// import { useToast } from '@/components/ui/use-toast';
 
 type FormNewPassword = {
   newPassword: string;
@@ -16,11 +15,11 @@ type FormNewPassword = {
 type FormError = Partial<FormNewPassword>;
 
 export default function NewPasswordPage() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const [token, setToken] = useState<string | null>(null);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [searchParams] = useSearchParams();
+  // const router = useRouter();
+  // const { toast } = useToast();
+  // const [token, setToken] = useState<string | null>(null);
+  // const [userId, setUserId] = useState<string | null>(null);
+  // const [searchParams] = useSearchParams();
   // const { mutateAsync: reset } = useResetPassword();
   const [formNewPassword, setFormNewPassword] = useState<FormNewPassword>({
     newPassword: '',
@@ -73,13 +72,13 @@ export default function NewPasswordPage() {
     // }
   };
 
-  useEffect(() => {
-    const tokenFromUrl = searchParams.get('token');
-    const userIdFromUrl = searchParams.get('userId');
+  // useEffect(() => {
+  //   const tokenFromUrl = searchParams.get('token');
+  //   const userIdFromUrl = searchParams.get('userId');
 
-    if (tokenFromUrl) setToken(tokenFromUrl);
-    if (userIdFromUrl) setUserId(userIdFromUrl);
-  }, []);
+  //   if (tokenFromUrl) setToken(tokenFromUrl);
+  //   if (userIdFromUrl) setUserId(userIdFromUrl);
+  // }, []);
 
   return (
     <BasePages

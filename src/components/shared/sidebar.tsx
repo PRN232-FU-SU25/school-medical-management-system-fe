@@ -35,8 +35,8 @@ export default function Sidebar() {
 
   const handleLogout = async () => {
     await logoutAccount({
-      accessToken: accessToken,
-      refreshToken: refreshToken
+      accessToken: accessToken || '',
+      refreshToken: refreshToken || ''
     });
     helpers.cookie_delete('RT');
     helpers.cookie_delete('AT');

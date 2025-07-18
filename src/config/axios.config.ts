@@ -11,7 +11,7 @@ import __helpers from '../helpers';
 
 const baseURL =
   process.env.NODE_ENV === 'production'
-    ? 'https://smms.azurewebsites.net/'
+    ? 'https://smmsapi.azurewebsites.net'
     : 'https://localhost:8080/';
 
 const token = helpers.cookie_get('AT');

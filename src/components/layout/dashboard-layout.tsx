@@ -142,7 +142,6 @@ export default function DashboardLayout({
   children?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
-  const location = useLocation();
   const navigate = useNavigate();
   const auth = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch();

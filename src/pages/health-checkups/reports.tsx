@@ -243,7 +243,7 @@ export default function HealthCheckupReports() {
                   </p>
                   <p className="text-3xl font-bold">15%</p>
                   <p className="text-sm text-red-600">
-                    <Icons.trendingDown className="mr-1 inline-block h-4 w-4" />
+                    <Icons.trendingUp className="mr-1 inline-block h-4 w-4" />
                     Giảm 2% so với tháng trước
                   </p>
                 </div>

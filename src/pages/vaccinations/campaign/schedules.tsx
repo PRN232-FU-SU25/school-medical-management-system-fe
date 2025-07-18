@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
 import {
   useGetVaccinationRecordByCampaignAndStudent,
   useGetCampaignVaccinationSchedules
@@ -31,8 +30,7 @@ interface VaccinationSchedule {
 export default function VaccinationSchedules() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [pageSize] = useState(10);
   const role = __helpers.cookie_get('R');
   const auth = useSelector((state: RootState) => state.auth);

@@ -71,7 +71,12 @@ export default function LoginPage() {
         helpers.cookie_set('AT', response.accessToken);
         helpers.cookie_set('RT', response.refreshToken);
         helpers.cookie_set('R', response.role);
-        navigate('/dashboard');
+
+        if (response.role === 'Admin' || response.role === 'SchoolNurse') {
+          navigate('/dashboard');
+        } else {
+          navigate('/dashboard/student-records');
+        }
         toast({
           title: 'Đăng nhập thành công',
           description: 'Chào mừng bạn quay trở lại!',

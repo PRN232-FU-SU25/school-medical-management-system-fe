@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Icons } from '@/components/ui/icons';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ export default function VaccinationConsents() {
   const { campaignId } = useParams<{ campaignId: string }>();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [pageSize] = useState(10);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 

@@ -129,11 +129,11 @@ const columns = [
 ];
 
 export default function HealthCheckups() {
-  const [loading, setLoading] = useState(false);
+  const [loading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
-  const [checkups, setCheckups] = useState<HealthCheckup[]>([
+  const [checkups] = useState<HealthCheckup[]>([
     {
       id: 1,
       studentName: 'Nguyễn Văn A',

@@ -1,8 +1,7 @@
 import __helpers from '@/helpers';
-import { login, setRole } from '@/redux/auth.slice';
+import { login } from '@/redux/auth.slice';
 import { useDispatch } from 'react-redux';
 import { Navigate } from 'react-router-dom';
-import { jwtDecode } from 'jwt-decode';
 import { useEffect, useState } from 'react';
 
 interface LoginRouteProps {
