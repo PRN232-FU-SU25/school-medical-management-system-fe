@@ -66,7 +66,7 @@ export default function PDFUpload({
         <p className="mb-3 text-center text-xs text-gray-500">
           Định dạng PDF, tối đa 50MB
         </p>
-        <Button size={'lg'} variant={'outlineBlue'} className="border-2">
+        <Button size={'lg'} variant={'outline'} className="border-2">
           Chọn từ thiết bị
         </Button>
       </div>
